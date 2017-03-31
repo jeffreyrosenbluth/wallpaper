@@ -18,12 +18,16 @@ infixl 7 .*^
 im :: Num a => Complex a
 im = 0 :+ 1
 
+focus :: Double -> Double -> Recipe  -> Recipe
+focus s t rcp (x :+ y) = s * t .*^ rcp (x / t :+ y / t)
+
 getPixel :: Image PixelRGBA8 -> Double -> Recipe -> Int -> Int -> PixelRGBA8
 getPixel img s rcp i j = clamp i' j'
   where
     (w, h) = (imageWidth img, imageHeight img)
     (w2, h2) = (fromIntegral w / 2, fromIntegral h / 2)
-    (x :+ y) = (1/s) .*^ rcp ((fromIntegral i - w2) :+ (fromIntegral j - h2))
+    (x :+ y) = focus (1/s) (w2/4) rcp ((fromIntegral i - w2) :+ (fromIntegral j - h2))
+    -- (x :+ y) = (1/s) .*^ rcp ((fromIntegral i - w2) :+ (fromIntegral j - h2))
     (i', j') = (round x + w `div` 2, round y + h `div` 2)
     clamp m n = if m < 0 || n < 0 || m >= w || n >= h
                   then PixelRGBA8 0 0 0 255 -- opaque black
@@ -43,7 +47,7 @@ recipe5 a b z = z**5 + z'**5
 
 p4m :: Recipe
 p4m = (+) <$> squareLattice 1 (-1) <*> squareLattice (-1) 1
-  
+
 generalLattice :: Double -> Double -> Int -> Int -> Complex Double -> Complex Double
 generalLattice xi eta n m (x :+ y) = exp (2 * pi .*^ im * zeta)
   where
@@ -62,8 +66,8 @@ squareLattice m n (x :+ y) = (1/4) .*^ (e n m + e m (-n) + e (-n) (-m) + e (-m) 
 run :: IO ()
 run = do
   dImg <- readImage . head =<< getArgs
-  let tr = transform (10**11) (recipe5 (0.003 :+ 0) (0 :+ 0)) --(10**18 :+ 0))
-  -- let tr = transform  (0.001) p4m
+  -- let tr = transform (10**11) (recipe5 (0.003 :+ 0) (0 :+ 0)) --(10**18 :+ 0))
+  let tr = transform  1 p4m
   writePng "output.png" $ case dImg of
     Left msg -> error msg
     Right (ImageRGB8  img) -> tr (promoteImage img)
