@@ -2,12 +2,10 @@ module Types where
 
 import Data.Complex
 
-type Recipe = Complex Double -> Complex Double
+type Recipe a = Complex a -> Complex a
 
-type Coefficent = ((Int, Int), Complex Double)
-
-data Coeff = Coeff
+data Coefficient a = Coefficient
   { nCoord :: Int
   , mCoord :: Int
-  , anm    :: Complex Double
+  , anm    :: Complex a
   }
