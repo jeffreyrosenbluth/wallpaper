@@ -5,6 +5,15 @@ import           Complextra
 
 import           Data.Complex
 
+mkCoeff :: Coefficent -> Coeff
+mkCoeff ((n, m), a) = Coeff n m a
+
+lattice :: (Int -> Int -> Recipe) -> [Coeff] -> Recipe
+lattice mkRecipe cs z = sum $ zipWith (*) as rs
+  where
+    as = anm <$> cs
+    rs = ($ z) . uncurry mkRecipe <$> [(nCoord c, mCoord c) | c <- cs]
+
 exp2pii :: Double -> Complex Double
 exp2pii x = exp (2 * pi * x .*^ im)
 
@@ -17,17 +26,17 @@ tnm n m x y = 0.5 * (enm n m x y + enm (-n) (-m) x y)
 snm :: Int -> Int -> Double -> Double -> Complex Double
 snm n m x y = 0.5 * (tnm n m x y + tnm (-n) m x y)
 
-neg :: Num a => (a, a) -> (a, a)
-neg (a,b) = (negate a, negate b)
+negateCnm :: Coeff -> Coeff
+negateCnm (Coeff n m a) = Coeff (-n) (-m) a
 
-neg2nd :: Num b => (a, b) -> (a, b)
-neg2nd (a, b) = (a, negate b)
+negateCm :: Coeff -> Coeff
+negateCm (Coeff n m a) = Coeff n (-m) a
 
-neg1st :: Num a => (a, b) -> (a, b)
-neg1st (a, b) = (negate a, b)
+reverseCnm :: Coeff -> Coeff
+reverseCnm (Coeff n m a) = Coeff m n a
 
-rev :: (a, a) -> (a, a)
-rev (a, b) = (b, a)
+alternateCanm :: (Int -> Int -> Int) -> Coeff -> Coeff
+alternateCanm alt (Coeff n m a) = Coeff n m (fromIntegral (alt n m) .*^ a)
 
 --------------------------------------------------------------------------------
 generalLattice :: Double -> Double -> Int -> Int -> Recipe
@@ -36,18 +45,11 @@ generalLattice xi eta n m (x :+ y) = enm n m x' y'
     x' = x - xi * y / eta
     y' = y / eta
 
-p1 :: Double -> Double -> [Coefficent] -> Recipe
-p1 xi eta cs z = sum $ zipWith (*) as es
-  where
-    as = snd <$> cs
-    es = ($ z) . uncurry (generalLattice xi eta) <$> (fst <$> cs)
+p1 :: Double -> Double -> [Coeff] -> Recipe
+p1 xi eta =  lattice (generalLattice xi eta)
 
-p2 :: Double -> Double -> [Coefficent] -> Recipe
-p2 xi eta cs z = sum $ zipWith (*) (as ++ as) (es ++ es')
-  where
-    as  = snd <$> cs
-    es  = ($ z) . uncurry (generalLattice xi eta) <$> (fst <$> cs)
-    es' = ($ z) . uncurry (generalLattice xi eta) <$> (neg . fst <$> cs)
+p2 :: Double -> Double -> [Coeff] -> Recipe
+p2 xi eta cs = lattice (generalLattice xi eta) (cs ++ (negateCnm <$> cs))
 
 --------------------------------------------------------------------------------
 rhombicLattice :: Double -> Int -> Int -> Recipe
@@ -56,21 +58,15 @@ rhombicLattice b n m (x :+ y) = enm n m x' y'
     x' = x + y / (2*b)
     y' = x - y / (2*b)
 
-cm :: Double -> [Coefficent] -> Recipe
-cm b cs z = sum $ zipWith (*) (as ++ as) (es ++ es')
-  where
-    as  = snd <$> cs
-    es  = ($ z) . uncurry (rhombicLattice b) <$> (fst <$> cs)
-    es' = ($ z) . uncurry (rhombicLattice b) <$> (rev . fst <$> cs)
+cm :: Double -> [Coeff] -> Recipe
+cm b cs = lattice (rhombicLattice b) (cs ++ (reverseCnm <$>) cs)
 
-cmm :: Double -> [Coefficent] -> Recipe
-cmm b cs z = sum $ zipWith (*) (cycle as) (es1 ++ es2 ++ es3 ++ es4)
+cmm :: Double -> [Coeff] -> Recipe
+cmm b cs = lattice (rhombicLattice b) (cs ++ cs1 ++ cs2 ++ cs3)
   where
-    as = snd <$> cs
-    es1 = ($ z) . uncurry (rhombicLattice b) <$> (fst <$> cs)
-    es2 = ($ z) . uncurry (rhombicLattice b) <$> (neg . fst <$> cs)
-    es3 = ($ z) . uncurry (rhombicLattice b) <$> (rev . fst <$> cs)
-    es4 = ($ z) . uncurry (rhombicLattice b) <$> (rev . neg . fst <$> cs)
+    cs1 = negateCnm <$> cs
+    cs2 = reverseCnm <$> cs
+    cs3 = (reverseCnm . negateCnm) <$> cs
 
 --------------------------------------------------------------------------------
 rectangularLattice :: Double -> Int -> Int -> Recipe
@@ -79,59 +75,31 @@ rectangularLattice l n m (x :+ y) = enm n m x (y / l)
 rectangularLattice' :: Double -> Int -> Int -> Recipe
 rectangularLattice' l n m (x :+ y) = tnm n m x (y / l)
 
-pm :: Double -> [Coefficent] -> Recipe
-pm l cs z = sum $ zipWith (*) (as ++ as) (es ++ es')
-  where
-    as  = snd <$> cs
-    es  = ($ z) . uncurry (rectangularLattice l) <$> (fst <$> cs)
-    es' = ($ z) . uncurry (rectangularLattice l) <$> (neg2nd . fst <$> cs)
+pm :: Double -> [Coeff] -> Recipe
+pm l cs = lattice (rectangularLattice l) (cs ++ (negateCm <$> cs))
 
-pg :: Double -> [Coefficent] -> Recipe
-pg l cs z = sum $ zipWith (*) (as ++ as') (es ++ es')
+pg :: Double -> [Coeff] -> Recipe
+pg l cs = lattice (rectangularLattice l) (cs ++ cs')
   where
-    sgns = (\n -> (-1) ^ n) . fst . fst <$> cs
-    as   = snd <$> cs
-    as'  = zipWith (*) sgns as
-    es   = ($ z) . uncurry (rectangularLattice l) <$> (fst <$> cs)
-    es'  = ($ z) . uncurry (rectangularLattice l) <$> (neg2nd . fst <$> cs)
+    cs' = (alternateCanm (\n _ -> (-1) ^ n) . negateCm) <$> cs
 
-pmm :: Double -> [Coefficent] -> Recipe
-pmm l cs z = sum $ zipWith (*) (as ++ as) (es ++ es')
-  where
-    as  = snd <$> cs
-    es  = ($ z) . uncurry (rectangularLattice' l) <$> (fst <$> cs)
-    es' = ($ z) . uncurry (rectangularLattice' l) <$> (neg2nd . fst <$> cs)
+pmm :: Double -> [Coeff] -> Recipe
+pmm l cs = lattice (rectangularLattice l) (cs ++ (negateCm <$> cs))
 
-pmg :: Double -> [Coefficent] -> Recipe
-pmg l cs z = sum $ zipWith (*) (as ++ as') (es ++ es')
-  where
-    sgns = (\n -> (-1) ^ n) . fst . fst <$> cs
-    as   = snd <$> cs
-    as'  = zipWith (*) sgns as
-    es   = ($ z) . uncurry (rectangularLattice' l) <$> (fst <$> cs)
-    es'  = ($ z) . uncurry (rectangularLattice' l) <$> (neg2nd . fst <$> cs)
+pmg :: Double -> [Coeff] -> Recipe
+pmg l cs = lattice (rectangularLattice' l) (cs ++ (negateCm <$> cs))
 
-pgg :: Double -> [Coefficent] -> Recipe
-pgg l cs z = sum $ zipWith (*) (as ++ as') (es ++ es')
+pgg :: Double -> [Coeff] -> Recipe
+pgg l cs = lattice (rectangularLattice' l) (cs ++ cs')
   where
-    sgns = (\n -> (-1) ^ n) . (\(a,b) -> a + b) . fst <$> cs
-    as   = snd <$> cs
-    as'  = zipWith (*) sgns as
-    es   = ($ z) . uncurry (rectangularLattice' l) <$> (fst <$> cs)
-    es'  = ($ z) . uncurry (rectangularLattice' l) <$> (neg2nd . fst <$> cs)
+    cs' = (alternateCanm (\n m -> (-1) ^ (n+m)) . negateCm) <$> cs
+
 --------------------------------------------------------------------------------
 squareLattice :: Int -> Int -> Recipe
 squareLattice m n (x :+ y) = snm n m x y
 
-p4 :: [Coefficent] -> Recipe
-p4 cs z = sum $ zipWith (*) as es
-  where
-    as = snd <$> cs
-    es = ($ z) . uncurry squareLattice <$> (fst <$> cs)
+p4 :: [Coeff] -> Recipe
+p4 = lattice squareLattice
 
-p4m :: [Coefficent] -> Recipe
-p4m cs z = sum $ zipWith (*) (as ++ as) (es ++ es')
-  where
-    as  = snd <$> cs
-    es  = ($ z) . uncurry squareLattice <$> (fst <$> cs)
-    es' = ($ z) . uncurry squareLattice <$> (rev . fst <$> cs)
+p4m :: [Coeff] -> Recipe
+p4m cs = lattice squareLattice (cs ++ (reverseCnm <$> cs))
