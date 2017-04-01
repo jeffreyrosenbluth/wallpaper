@@ -35,7 +35,7 @@ recipe5 a b z = z**5 + z'**5
 run :: IO ()
 run = do
   dImg <- readImage . head =<< getArgs
-  let tr = transform (1 :: Double) 400 700 700 (p4 $ mkCoefficient <$> [(1, -1, 1 :+ 0)])
+  let tr = transform (1 :: Double) 400 700 700 (p4 $ mkCoef <$> [(1, -1, 1 :+ 0)])
   writePng "output.png" $ case dImg of
     Left msg -> error msg
     Right (ImageRGB8  img) -> tr (promoteImage img)

@@ -4,7 +4,7 @@ import Data.Complex
 
 type Recipe a = Complex a -> Complex a
 
-data Coefficient a = Coefficient
+data Coef a = Coef
   { nCoord :: Int
   , mCoord :: Int
   , anm    :: Complex a
