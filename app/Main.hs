@@ -9,15 +9,27 @@ import           Codec.Picture.Types
 import           Codec.Picture
 import           System.Environment
 
+toImageRGBA8 :: DynamicImage -> Image PixelRGBA8
+toImageRGBA8 (ImageRGBA8 i)  = i
+toImageRGBA8 (ImageRGB8 i)   = promoteImage i
+toImageRGBA8 (ImageYCbCr8 i) = promoteImage (convertImage i :: Image PixelRGB8)
+toImageRGBA8 (ImageY8 i)     = promoteImage i
+toImageRGBA8 (ImageYA8 i)    = promoteImage i
+toImageRGBA8 (ImageCMYK8 i)  = promoteImage (convertImage i :: Image PixelRGB8)
+toImageRGBA8 _               = error "Unsupported Pixel type"
+
 main :: IO ()
 main = do
   dImg <- readImage . head =<< getArgs
-  let tr = transform (1 :: Double) 400 700 700 (p6m $ mkCoef <$> [(1, -1, 1 :+ 0)])
+  let tr = transform (0.50 :: Double) 100 700 700 (p31m $ mkCoef <$> [(1, -1, 1 :+ 0)])
   writePng "output.png" $ case dImg of
-    Left msg -> error msg
-    Right (ImageRGB8  img) -> tr (promoteImage img)
-    Right (ImageRGBA8 img) -> tr img
-    Right _                -> error "png images only please."
+    Right img -> tr (toImageRGBA8 img)
+    Left e -> error "ouch"
+  -- writePng "output.png" $ case dImg of
+  --   Left msg -> error msg
+  --   Right (ImageRGB8  img) -> tr (promoteImage img)
+  --   Right (ImageRGBA8 img) -> tr img
+  --   Right _                -> error "png images only please."
 
 -- let tr = transform (10**11) (recipe5 (0.003 :+ 0) (0 :+ 0)) --(10**18 :+ 0))
 -- let tr = transform  1 p4m
