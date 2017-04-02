@@ -62,7 +62,7 @@ pm l cs = wallpaper (rectangularLattice l) (cs ++ (negateCm <$> cs))
 pg :: RealFloat a => a -> [Coef a] -> Recipe a
 pg l cs = wallpaper (rectangularLattice l) (cs ++ cs')
   where
-    cs' = alternateCanm (\n _ -> (-1) ^ n) . negateCm <$> cs
+    cs' =  negateCm . alternateCanm (\n _ -> (-1) ^ n) <$> cs
 
 pmm :: RealFloat a => a -> [Coef a] -> Recipe a
 pmm l cs = wallpaper (rectangularLattice l) (cs ++ (negateCm <$> cs))
@@ -73,7 +73,7 @@ pmg l cs = wallpaper (rectangularLattice' l) (cs ++ (negateCm <$> cs))
 pgg :: RealFloat a => a -> [Coef a] -> Recipe a
 pgg l cs = wallpaper (rectangularLattice' l) (cs ++ cs')
   where
-    cs' = alternateCanm (\n m -> (-1) ^ (n+m)) . negateCm <$> cs
+    cs' = negateCm . alternateCanm (\n m -> (-1) ^ (n+m)) <$> cs
 
 --------------------------------------------------------------------------------
 squareLattice :: RealFloat a => Int -> Int -> Recipe a
@@ -88,7 +88,7 @@ p4m cs = wallpaper squareLattice (cs ++ (reverseCnm <$> cs))
 p4g :: RealFloat a => [Coef a] -> Recipe a
 p4g cs = wallpaper squareLattice (cs ++ cs')
   where
-    cs' = alternateCanm (\n m -> (-1) ^ (n+m)) . reverseCnm <$> cs
+    cs' = reverseCnm . alternateCanm (\n m -> (-1) ^ (n+m)) <$> cs
 
 --------------------------------------------------------------------------------
 hexagonalLattice :: RealFloat a => Int -> Int -> Recipe a

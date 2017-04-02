@@ -8,4 +8,4 @@ data Coef a = Coef
   { nCoord :: Int
   , mCoord :: Int
   , anm    :: Complex a
-  }
+  } deriving Show
