@@ -2,40 +2,22 @@ module Recipes.Wallpaper where
 
 import           Types
 import           Complextra
+import           Lib
 
 import           Data.Complex
 
 mkCoef :: (Int, Int, Complex a) -> Coef a
 mkCoef (n, m, a) = Coef n m a
 
-wallpaper :: RealFloat a => (Int -> Int -> Recipe a) -> [Coef a] -> Recipe a
-wallpaper mkRecipe cs z = sum $ zipWith (*) as rs
-  where
-    as = anm <$> cs
-    rs = ($ z) . uncurry mkRecipe <$> [(nCoord c, mCoord c) | c <- cs]
-
-exp2pii :: RealFloat a => a -> Complex a
-exp2pii x = exp (2 * pi * x .*^ im)
 
 enm :: RealFloat a => Int -> Int -> a -> a -> Complex a
 enm n m x y = exp (2 * pi * (fromIntegral n * x + fromIntegral m * y) .*^ im)
 
 tnm :: RealFloat a => Int -> Int -> a -> a -> Complex a
 tnm n m x y = 0.5 * (enm n m x y + enm (-n) (-m) x y)
+
 wnm :: RealFloat a => Int -> Int -> a -> a -> Complex a
 wnm n m x y = (1/3) * (enm n m x y + enm m (-n - m) x y + enm (-n - m) n x y)
-
-negateCnm :: Coef a -> Coef a
-negateCnm (Coef n m a) = Coef (-n) (-m) a
-
-negateCm :: Coef a -> Coef a
-negateCm (Coef n m a) = Coef n (-m) a
-
-reverseCnm :: Coef a -> Coef a
-reverseCnm (Coef n m a) = Coef m n a
-
-alternateCanm :: RealFloat a => (Int -> Int -> Int) -> Coef a -> Coef a
-alternateCanm alt (Coef n m a) = Coef n m (fromIntegral (alt n m) .*^ a)
 
 --------------------------------------------------------------------------------
 generalLattice :: RealFloat a => a -> a -> Int -> Int -> Recipe a
@@ -58,7 +40,7 @@ rhombicLattice b n m (x :+ y) = enm n m x' y'
     y' = x - y / (2*b)
 
 cm :: RealFloat a => a -> [Coef a] -> Recipe a
-cm b cs = wallpaper (rhombicLattice b) (cs ++ (reverseCnm <$>) cs)
+cm b cs = wallpaper (rhombicLattice b) (cs ++ (reverseCnm <$> cs))
 
 cmm :: RealFloat a => a -> [Coef a] -> Recipe a
 cmm b cs = wallpaper (rhombicLattice b) (cs ++ cs1 ++ cs2 ++ cs3)

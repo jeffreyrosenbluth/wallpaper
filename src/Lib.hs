@@ -6,6 +6,24 @@ import           Complextra
 import           Codec.Picture
 import           Data.Complex
 
+wallpaper :: RealFloat a => (Int -> Int -> Recipe a) -> [Coef a] -> Recipe a
+wallpaper mkRecipe cs z = sum $ zipWith (*) as rs
+  where
+    as = anm <$> cs
+    rs = ($ z) . uncurry mkRecipe <$> [(nCoord c, mCoord c) | c <- cs]
+
+negateCnm :: Coef a -> Coef a
+negateCnm (Coef n m a) = Coef (-n) (-m) a
+
+negateCm :: Coef a -> Coef a
+negateCm (Coef n m a) = Coef n (-m) a
+
+reverseCnm :: Coef a -> Coef a
+reverseCnm (Coef n m a) = Coef m n a
+
+alternateCanm :: RealFloat a => (Int -> Int -> Int) -> Coef a -> Coef a
+alternateCanm alt (Coef n m a) = Coef n m (fromIntegral (alt n m) .*^ a)
+
 getPixel :: RealFloat a => Image PixelRGBA8 -> a -> a -> Recipe a -> Int -> Int
          -> PixelRGBA8
 getPixel img s t rcp i j = clamp i' j'
