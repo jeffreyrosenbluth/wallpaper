@@ -33,7 +33,7 @@ alternateCanm :: RealFloat a => (Int -> Int -> Int) -> Coef a -> Coef a
 alternateCanm alt (Coef n m a) = Coef n m (fromIntegral (alt n m) .*^ a)
 
 getPixel :: (RealFloat a, Pixel p, BlackWhite p) => Image p -> Int -> Int -> a -> a
-         ->  Recipe a -> Int -> Int -> p
+         -> Recipe a -> Int -> Int -> p
 getPixel img w2 h2 s t rcp i j = clamp (round x + w1 `div` 2) (round y + h1 `div` 2)
   where
     (w1, h1) = (imageWidth img, imageHeight img)
@@ -43,22 +43,23 @@ getPixel img w2 h2 s t rcp i j = clamp (round x + w1 `div` 2) (round y + h1 `div
       | m < 0 || n < 0 || m >= w1 || n >= h1 = black
       | otherwise = pixelAt img m n
 
-transform :: RealFloat a => a -> a -> Int -> Int -> Recipe a -> Image PixelRGBA8
-          -> Image PixelRGBA8
+transform :: (RealFloat a, Pixel p, BlackWhite p) => a -> a -> Int -> Int -> Recipe a -> Image p
+          -> Image p
 transform s t w h rcp img = generateImage (getPixel img w h s t rcp) w h
 
-blend :: RealFloat a => a -> a -> Int -> Int -> Recipe a -> Recipe a -> Image PixelRGBA8 -> Image PixelRGBA8
+blend :: (RealFloat a, Pixel p, BlackWhite p)
+      => a -> a -> Int -> Int -> Recipe a -> Recipe a -> Image p -> Image p
 blend s t w h rcp1 rcp2 = transform s t w h rcp
   where
     rcp z@(x :+ _) = let a = (x + m) / (2 * m)
                      in  a .*^ rcp2 z + (1 - a) .*^ rcp1 z
     m = max 1 (fromIntegral w / fromIntegral h)
 
-morph :: RealFloat a => a -> a -> a -> Int -> Int -> Recipe a -> Image PixelRGBA8 -> Image PixelRGBA8
+morph :: (RealFloat a, Pixel p, BlackWhite p)
+      => a -> a -> a -> Int -> Int -> Recipe a -> Image PixelRGBA8 -> Image PixelRGBA8
 morph s t c w h rcp = transform s t w h rcp'
   where
     rcp' z@(x :+ _) = exp (pi * phi c ((x+1)/m) .*^ im) * rcp z 
-    -- rcp' z@(x :+ _) = exp (pi * phi c (x + fromIntegral w / 2) / (2 * m)) .*^ im) * rcp z 
     m = max 1 (fromIntegral w / fromIntegral h)
     phi cut u
       | u < cut = 1
