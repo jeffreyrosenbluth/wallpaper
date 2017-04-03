@@ -20,6 +20,7 @@ library
                      , Complextra
                      , Recipes.Wallpaper
                      , Recipes.Frieze
+                     , Recipes.Rosette
                      , Types
   build-depends:       base >= 4.7 && < 5
                      , JuicyPixels >= 3.2 && < 3.3

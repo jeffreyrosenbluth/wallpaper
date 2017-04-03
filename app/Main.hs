@@ -3,7 +3,6 @@ module Main where
 import           Lib
 import           Recipes.Frieze
 import           Recipes.Wallpaper
-import           Types
 
 import           Data.Complex
 import           Codec.Picture.Types
@@ -22,18 +21,10 @@ toImageRGBA8 _               = error "Unsupported Pixel type"
 main :: IO ()
 main = do
   dImg <- readImage . head =<< getArgs
-  let tr = transform (10 :: Double) 50 1000 250 (p2mg $ mkCoef <$> [(1,0,1.5:+1), (3,1, 2:+(-1.5)), (1,(-1),2:+1)])
-  -- let tr = transform (1 :: Double) 100 1000 250 (p211 $ mkCoef
-  --      <$> [ (1, -1, 1 :+ 0)
-  --          , (0, 2, 0 :+ 0.5)
-           -- ])
+  let tr = blend (0.5 :: Double) 0.75 1000 500
+             (p6 $ mkCoef <$> [(1,0,0.75:+0.25), (3,1, 0.6:+(-0.2)), (1,(-1),0.2:+0.1)])
+             (p6m $ mkCoef <$> [(1,0,0.75:+0.25), (3,1, 0.6:+(-0.2)), (1,(-1),0.2:+0.1)])
   writePng "output.png" $ case dImg of
     Right img -> tr (toImageRGBA8 img)
-    Left e -> error "ouch"
+    Left e -> error e
 
-recipe5 :: RealFloat a => Complex a -> Complex a -> Recipe a
-recipe5 a b z = z**5 + z'**5
-              + a * (z**6 * z' + z * z'**6)
-              + b * (z**4 * z'**(-6) + z**(-6) * z'**4)
-  where
-    z' = conjugate z
