@@ -21,9 +21,8 @@ toImageRGBA8 _               = error "Unsupported Pixel type"
 main :: IO ()
 main = do
   dImg <- readImage . head =<< getArgs
-  let tr = blend (0.5 :: Double) 0.75 1000 500
+  let tr = morph (0.5 :: Double) 0.75 0.2 1000 500
              (p6 $ mkCoef <$> [(1,0,0.75:+0.25), (3,1, 0.6:+(-0.2)), (1,(-1),0.2:+0.1)])
-             (p6m $ mkCoef <$> [(1,0,0.75:+0.25), (3,1, 0.6:+(-0.2)), (1,(-1),0.2:+0.1)])
   writePng "output.png" $ case dImg of
     Right img -> tr (toImageRGBA8 img)
     Left e -> error e
