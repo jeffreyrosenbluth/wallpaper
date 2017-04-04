@@ -5,6 +5,7 @@ import           Complextra
 import           Lib
 
 import           Data.Complex
+import           Data.List     (nub)
 
 mkCoef :: (Int, Int, Complex a) -> Coef a
 mkCoef (n, m, a) = Coef n m a
@@ -30,7 +31,7 @@ p1 :: RealFloat a => a -> a -> [Coef a] -> Recipe a
 p1 xi eta =  wallpaper (generalLattice xi eta)
 
 p2 :: RealFloat a => a -> a -> [Coef a] -> Recipe a
-p2 xi eta cs = wallpaper (generalLattice xi eta) (cs ++ (negateCnm <$> cs))
+p2 xi eta cs = wallpaper (generalLattice xi eta) (nub $cs ++ (negateCnm <$> cs))
 
 --------------------------------------------------------------------------------
 rhombicLattice :: RealFloat a => a -> Int -> Int -> Recipe a
@@ -40,10 +41,10 @@ rhombicLattice b n m (x :+ y) = enm n m x' y'
     y' = x - y / (2*b)
 
 cm :: RealFloat a => a -> [Coef a] -> Recipe a
-cm b cs = wallpaper (rhombicLattice b) (cs ++ (reverseCnm <$> cs))
+cm b cs = wallpaper (rhombicLattice b) (nub $ cs ++ (reverseCnm <$> cs))
 
 cmm :: RealFloat a => a -> [Coef a] -> Recipe a
-cmm b cs = wallpaper (rhombicLattice b) (cs ++ cs1 ++ cs2 ++ cs3)
+cmm b cs = wallpaper (rhombicLattice b) (nub $ cs ++ cs1 ++ cs2 ++ cs3)
   where
     cs1 = negateCnm <$> cs
     cs2 = reverseCnm <$> cs
@@ -57,21 +58,21 @@ rectangularLattice' :: RealFloat a => a -> Int -> Int -> Recipe a
 rectangularLattice' l n m (x :+ y) = tnm n m x (y / l)
 
 pm :: RealFloat a => a -> [Coef a] -> Recipe a
-pm l cs = wallpaper (rectangularLattice l) (cs ++ (negateCm <$> cs))
+pm l cs = wallpaper (rectangularLattice l) (nub $ cs ++ (negateCm <$> cs))
 
 pg :: RealFloat a => a -> [Coef a] -> Recipe a
-pg l cs = wallpaper (rectangularLattice l) (cs ++ cs')
+pg l cs = wallpaper (rectangularLattice l) (nub $ cs ++ cs')
   where
-    cs' =  negateCm . alternateCanm (\n _ -> (-1) ^ n) <$> cs
+    cs' = negateCm . alternateCanm (\n _ -> (-1) ^ n) <$> cs
 
 pmm :: RealFloat a => a -> [Coef a] -> Recipe a
-pmm l cs = wallpaper (rectangularLattice l) (cs ++ (negateCm <$> cs))
+pmm l cs = wallpaper (rectangularLattice l) (nub $ cs ++ (negateCm <$> cs))
 
 pmg :: RealFloat a => a -> [Coef a] -> Recipe a
-pmg l cs = wallpaper (rectangularLattice' l) (cs ++ (negateCm <$> cs))
+pmg l cs = wallpaper (rectangularLattice' l) (nub $ cs ++ (negateCm <$> cs))
 
 pgg :: RealFloat a => a -> [Coef a] -> Recipe a
-pgg l cs = wallpaper (rectangularLattice' l) (cs ++ cs')
+pgg l cs = wallpaper (rectangularLattice' l) (nub $ cs ++ cs')
   where
     cs' = negateCm . alternateCanm (\n m -> (-1) ^ (n+m)) <$> cs
 
@@ -83,10 +84,10 @@ p4 :: RealFloat a => [Coef a] -> Recipe a
 p4 = wallpaper squareLattice
 
 p4m :: RealFloat a => [Coef a] -> Recipe a
-p4m cs = wallpaper squareLattice (cs ++ (reverseCnm <$> cs))
+p4m cs = wallpaper squareLattice (nub $ cs ++ (reverseCnm <$> cs))
 
 p4g :: RealFloat a => [Coef a] -> Recipe a
-p4g cs = wallpaper squareLattice (cs ++ cs')
+p4g cs = wallpaper squareLattice (nub $ cs ++ cs')
   where
     cs' = reverseCnm . alternateCanm (\n m -> (-1) ^ (n+m)) <$> cs
 
@@ -102,16 +103,16 @@ p3 :: RealFloat a => [Coef a] -> Recipe a
 p3 = wallpaper hexagonalLattice
 
 p31m :: RealFloat a => [Coef a] -> Recipe a
-p31m cs = wallpaper hexagonalLattice (cs ++ (reverseCnm <$> cs))
+p31m cs = wallpaper hexagonalLattice (nub $ cs ++ (reverseCnm <$> cs))
 
 p3m1 :: RealFloat a => [Coef a] -> Recipe a
-p3m1 cs = wallpaper hexagonalLattice (cs ++ (negateCnm . reverseCnm <$> cs))
+p3m1 cs = wallpaper hexagonalLattice (nub $ cs ++ (negateCnm . reverseCnm <$> cs))
 
 p6 :: RealFloat a => [Coef a] -> Recipe a
-p6 cs = wallpaper hexagonalLattice (cs ++ (negateCnm <$> cs))
+p6 cs = wallpaper hexagonalLattice (nub $ cs ++ (negateCnm <$> cs))
 
 p6m :: RealFloat a => [Coef a] -> Recipe a
-p6m cs = wallpaper hexagonalLattice (cs ++ cs1 ++ cs2 ++ cs3)
+p6m cs = wallpaper hexagonalLattice (nub $ cs ++ cs1 ++ cs2 ++ cs3)
   where
     cs1 = negateCnm <$> cs
     cs2 = reverseCnm <$> cs

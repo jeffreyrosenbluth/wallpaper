@@ -1,4 +1,5 @@
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE StrictData           #-}
 
 module Types where
 
@@ -11,7 +12,7 @@ data Coef a = Coef
   { nCoord :: Int
   , mCoord :: Int
   , anm    :: Complex a
-  } deriving Show
+  } deriving (Show, Eq)
 
 class BlackWhite a where
   black :: a

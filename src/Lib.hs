@@ -56,7 +56,7 @@ blend s t w h rcp1 rcp2 = transform s t w h rcp
     m = max 1 (fromIntegral w / fromIntegral h)
 
 morph :: (RealFloat a, Pixel p, BlackWhite p)
-      => a -> a -> a -> Int -> Int -> Recipe a -> Image PixelRGBA8 -> Image PixelRGBA8
+      => a -> a -> a -> Int -> Int -> Recipe a -> Image p -> Image p
 morph s t c w h rcp = transform s t w h rcp'
   where
     rcp' z@(x :+ _) = exp (pi * phi c ((x+1)/m) .*^ im) * rcp z 
