@@ -18,6 +18,7 @@ library
   ghc-options:         -Wall -O2
   exposed-modules:     Lib
                      , Complextra
+                     , Recipes
                      , Recipes.Wallpaper
                      , Recipes.Frieze
                      , Recipes.Rosette
