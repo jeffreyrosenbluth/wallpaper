@@ -1,7 +1,6 @@
-{-# LANGUAGE TypeSynonymInstances  #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE StrictData            #-}
-{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUage TypeFamilies          #-}
+{-# LANGUAGE TypeSynonymInstances  #-}
 
 module Types where
 
@@ -23,7 +22,19 @@ data Options a = Options
   , focus  :: a
   }
 
-data Result r a p = Result {generateResult :: Recipe a -> Options a -> Image p -> r}
+class Img a where
+  type Pxl a :: *
+  getPxl :: a -> Int -> Int-> Pxl a
+  generateImg :: (Int -> Int -> Pxl a) -> Int -> Int -> a
+  imgWidth :: a -> Int
+  imgHeight :: a -> Int
+
+instance Pixel p => Img (Image p) where
+  type Pxl (Image p) = p
+  getPxl = pixelAt
+  generateImg = generateImage
+  imgWidth = imageWidth
+  imgHeight = imageHeight
 
 class BlackWhite a where
   black :: a
