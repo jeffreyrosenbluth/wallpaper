@@ -1,3 +1,7 @@
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 module Lib where
 
 import           Recipes
@@ -44,3 +48,6 @@ morph rcp opts c = transform rcp' opts
       | u < cut = 1
       | u > 1 - cut = -1
       | otherwise = (-2 / (1 - 2 * cut)) * (u - 0.5)
+
+jpResult :: Result (Image PixelRGBA8) Double PixelRGBA8
+jpResult = Result transform

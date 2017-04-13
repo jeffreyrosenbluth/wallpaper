@@ -1,5 +1,7 @@
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE StrictData           #-}
+{-# LANGUAGE TypeSynonymInstances  #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE StrictData            #-}
+{-# LANGUAGE TypeFamilies          #-}
 
 module Types where
 
@@ -20,6 +22,8 @@ data Options a = Options
   , scale  :: a
   , focus  :: a
   }
+
+data Result r a p = Result {generateResult :: Recipe a -> Options a -> Image p -> r}
 
 class BlackWhite a where
   black :: a
