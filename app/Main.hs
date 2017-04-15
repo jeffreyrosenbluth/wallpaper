@@ -1,6 +1,6 @@
 module Main where
 
-import           Lib
+import           Core
 import           Types
 import           Recipes.Frieze
 import           Recipes.Wallpaper
@@ -27,8 +27,7 @@ main = do
     Left e -> error e
 
 tr :: (Pixel p, BlackWhite p) => Image p -> Image p
-tr = transform (p4m coefs) (Options 750 750 0.5 0.5)
-
+tr = transform defaultOpts (p4m coefs) 
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)
         , Coef 3 1 (0.6:+(-0.2))

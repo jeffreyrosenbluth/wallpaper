@@ -22,6 +22,9 @@ data Options a = Options
   , focus  :: a
   }
 
+defaultOpts :: RealFloat a => Options a
+defaultOpts = Options 750 750 0.5 0.5
+
 class Img a where
   type Pxl a :: *
   getPxl :: a -> Int -> Int-> Pxl a
