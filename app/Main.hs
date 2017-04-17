@@ -27,7 +27,10 @@ main = do
     Left e -> error e
 
 tr :: (Pixel p, BlackWhite p) => Image p -> Image p
-tr = transform defaultOpts (p4m coefs) 
+tr = morph opts (p4m coefs) 0
+  where
+    opts = defaultOpts {width = 1500, height=500}
+
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)
         , Coef 3 1 (0.6:+(-0.2))

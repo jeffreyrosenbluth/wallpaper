@@ -39,9 +39,9 @@ blend opts rcp1 rcp2 = transform opts rcp
 
 morph :: (RealFloat a, Img i, BlackWhite (Pxl i))
       => Options a -> Recipe a -> a -> i -> i
-morph opts rcp c = transform opts rcp' 
+morph opts rcp c = transform opts rcp'
   where
-    rcp' z@(x :+ _) = exp (pi * phi c ((x+1)/m) .*^ im) * rcp z 
+    rcp' z@(x :+ _) = exp (pi * phi (c-1.5) ((x+1)/m) .*^ im) * rcp z
     m = max 1 (fromIntegral (width opts) / fromIntegral (height opts))
     phi cut u
       | u < cut = 1
