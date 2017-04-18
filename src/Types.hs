@@ -66,3 +66,24 @@ instance BlackWhite PixelYA8 where
 instance BlackWhite PixelCMYK8 where
   black = PixelCMYK8  0 0 0 255
   white = PixelCMYK8 0 0 0 0
+
+class Invertible a where
+  invert :: a -> a
+
+instance Invertible PixelRGBA8 where
+  invert (PixelRGBA8 r g b a) = PixelRGBA8 (255-r) (255-g) (255-b) a
+
+instance Invertible PixelRGB8 where
+  invert (PixelRGB8 r g b)  = PixelRGB8 (255-r) (255-g) (255-b)
+
+instance Invertible PixelYCbCr8 where
+  invert (PixelYCbCr8 r g b)  = PixelYCbCr8 (255-r) (255-g) (255-b)
+
+instance Invertible Pixel8 where
+  invert p = 255 - p
+
+instance Invertible PixelYA8 where
+  invert (PixelYA8 c a) = PixelYA8 (255-c) a
+
+instance Invertible PixelCMYK8 where
+  invert (PixelCMYK8 r g b a) = PixelCMYK8 (255-r) (255-g) (255-b) a

@@ -4,7 +4,7 @@
 
 module Core where
 
-import           Recipes
+import           Recipe
 import           Types
 import           Complextra
 

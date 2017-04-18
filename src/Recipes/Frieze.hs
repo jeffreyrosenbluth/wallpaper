@@ -2,7 +2,7 @@ module Recipes.Frieze where
 
 import           Types
 import           Complextra
-import           Recipes
+import           Recipe
 
 import           Data.Complex
 

@@ -1,4 +1,4 @@
-module Recipes where
+module Recipe where
 
 import           Types
 import           Complextra

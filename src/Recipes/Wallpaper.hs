@@ -2,7 +2,7 @@ module Recipes.Wallpaper where
 
 import           Types
 import           Complextra
-import           Recipes
+import           Recipe
 
 import           Data.Complex
 import           Data.List     (nub)
