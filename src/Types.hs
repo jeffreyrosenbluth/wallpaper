@@ -16,14 +16,14 @@ data Coef a = Coef
   } deriving (Show, Eq)
 
 data Options a = Options
-  { width  :: Int
-  , height :: Int
-  , scale  :: a
-  , focus  :: a
+  { width     :: Int
+  , height    :: Int
+  , repLength :: Int
+  , scale     :: a
   }
 
 defaultOpts :: RealFloat a => Options a
-defaultOpts = Options 750 750 0.5 0.5
+defaultOpts = Options 750 750 200 1
 
 class Img a where
   type Pxl a :: *

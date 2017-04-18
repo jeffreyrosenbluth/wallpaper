@@ -5,11 +5,12 @@ import           Complextra
 
 import           Data.Complex
 
-focusIn :: RealFloat a => Int -> Int -> Recipe a -> Recipe a
-focusIn w h rcp (x :+ y) =
-  rcp ((x - fromIntegral w / 2) / l :+ (y - fromIntegral h / 2) / l)
+-- | Center the coordinates at the origin and scale them to the range (-1, 1)
+focusIn :: RealFloat a => Int -> Int -> Int -> Recipe a -> Recipe a
+focusIn w h l rcp (x :+ y) =
+  rcp ((x - fromIntegral w / 2) / l' :+ (fromIntegral h / 2 - y) / l')
     where
-      l = 0.5 * fromIntegral (min w h)
+      l' = fromIntegral l
 
 wallpaper :: RealFloat a => (Int -> Int -> Recipe a) -> [Coef a] -> Recipe a
 wallpaper mkRecipe cs z = sum $ zipWith (*) as rs
