@@ -19,6 +19,7 @@ library
   exposed-modules:     Core
                      , Complextra
                      , Recipe
+                     , Juicy
                      , Recipes.Wallpaper
                      , Recipes.Frieze
                      , Recipes.Rosette
