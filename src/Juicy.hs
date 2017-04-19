@@ -1,25 +1,25 @@
 module Juicy where
 
-import Types
+import           Types
 
-import Codec.Picture
-import Codec.Picture.Types
+import           Codec.Picture
+import           Codec.Picture.Types
 
 negative :: (Pixel p, Invertible p) => Image p -> Image p
 negative = pixelMap invert
 
-flipHorizontally :: Pixel a => Image a -> Image a
-flipHorizontally img@(Image w h _) = generateImage g  w h
+flipHorizontal:: Pixel a => Image a -> Image a
+flipHorizontal img@(Image w h _) = generateImage g  w h
   where
     g x = pixelAt img (w - 1 - x)
 
-flipVertically :: Pixel a => Image a -> Image a
-flipVertically img@(Image w h _) = generateImage g w h
+flipVertical :: Pixel a => Image a -> Image a
+flipVertical img@(Image w h _) = generateImage g w h
   where
     g x y = pixelAt img x (h - 1 - y)
 
-flipVH :: Pixel a => Image a -> Image a
-flipVH img@(Image w h _) = generateImage g w h
+flipBoth :: Pixel a => Image a -> Image a
+flipBoth img@(Image w h _) = generateImage g w h
   where
     g x y = pixelAt img (w - 1 - x) (h - 1 - y)
 
@@ -40,10 +40,10 @@ below img1@(Image w h1 _) img2@(Image _ h2 _) =
       | otherwise = pixelAt img2 x (y - h1)
 
 antiSymmHorizontal :: (Pixel a, Invertible a) => Image a -> Image a
-antiSymmHorizontal img = below img (flipHorizontally . negative $ img)
+antiSymmHorizontal img = below img (flipHorizontal . negative $ img)
 
 antiSymmVertical :: (Pixel a, Invertible a) => Image a -> Image a
-antiSymmVertical img = beside img (flipHorizontally . negative $ img)
+antiSymmVertical img = beside img (flipVertical . negative $ img)
 
 toImageRGBA8 :: DynamicImage -> Image PixelRGBA8
 toImageRGBA8 (ImageRGBA8 i)  = i

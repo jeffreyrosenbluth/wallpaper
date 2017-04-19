@@ -3,7 +3,6 @@ module Main where
 import           Core
 import           Types
 import           Juicy
-import           Recipes.Frieze
 import           Recipes.Wallpaper
 
 import           Data.Complex
@@ -15,12 +14,12 @@ main = do
   dImg <- readImage . head =<< getArgs
   writePng "output.png" $ case dImg of
     Right img -> tr . antiSymmVertical $ toImageRGBA8 img
-    -- Right img -> antiSymmHorizontal (toImageRGBA8 img)
     Left e -> error e
 
 tr :: (Pixel p, BlackWhite p) => Image p -> Image p
 tr = transform opts (p4g coefs)
   where
+    opts :: Options Double
     opts = defaultOpts {repLength=200, scale=0.45}
 
 coefs :: [Coef Double]

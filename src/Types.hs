@@ -5,7 +5,7 @@
 module Types where
 
 import           Codec.Picture
-import           Data.Complex
+import           Data.Complex (Complex)
 
 type Recipe a = Complex a -> Complex a
 
@@ -22,7 +22,7 @@ data Options a = Options
   , scale     :: a
   }
 
-defaultOpts :: RealFloat a => Options a
+defaultOpts :: Options Double
 defaultOpts = Options 750 750 200 1
 
 class Img a where
