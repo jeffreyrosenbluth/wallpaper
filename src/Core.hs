@@ -10,9 +10,9 @@ import           Complextra
 
 import           Data.Complex
 
-getPixel :: (RealFloat a, Img i, BlackWhite (Pxl i))
+getColor :: (RealFloat a, Img i, BlackWhite (Pxl i))
           => Options a -> Recipe a -> i -> Int -> Int -> Pxl i
-getPixel opts rcp img i j = clamp (round x + w1 `div` 2) (round y + h1 `div` 2)
+getColor opts rcp img i j = clamp (round x + w1 `div` 2) (round y + h1 `div` 2)
   where
     (w1, h1) = (imgWidth img, imgHeight img)
     (x :+ y) = (scale opts * 0.5 * fromIntegral (min w1 h1))
@@ -27,7 +27,7 @@ getPixel opts rcp img i j = clamp (round x + w1 `div` 2) (round y + h1 `div` 2)
 
 transform :: (RealFloat a, Img i, BlackWhite (Pxl i))
           => Options a -> Recipe a -> i -> i
-transform opts rcp img = generateImg (getPixel opts rcp img) (width opts) (height opts)
+transform opts rcp img = generateImg (getColor opts rcp img) (width opts) (height opts)
 
 blend :: (RealFloat a, Img i, BlackWhite (Pxl i))
       => Options a -> Recipe a -> Recipe a -> i-> i

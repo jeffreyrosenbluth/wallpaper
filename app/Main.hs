@@ -8,19 +8,29 @@ import           Recipes.Wallpaper
 import           Data.Complex
 import           Codec.Picture
 import           System.Environment
+import           System.FilePath    (takeExtension)
 
 main :: IO ()
 main = do
-  dImg <- readImage . head =<< getArgs
-  writePng "output.png" $ case dImg of
-    Right img -> tr . antiSymmVertical $ toImageRGBA8 img
-    Left e -> error e
+  [inFile, outFile] <- getArgs
+  dImg <- readImage inFile
+  let img  = case dImg of
+         Left e -> error e
+         Right i -> below' $ toImageRGBA8 i
+  case takeExtension outFile of
+     ".png" -> writePng outFile img
+     ".tif" -> writeTiff outFile img
+     ".bmp" -> writeBitmap outFile img
+     ".jpg" -> writeJpeg 80 outFile img
+     _      -> writePng outFile img
+  where
+    below' a = below a a
 
 tr :: (Pixel p, BlackWhite p) => Image p -> Image p
-tr = transform opts (p4g coefs)
+tr = transform opts (p3m1 coefs)
   where
     opts :: Options Double
-    opts = defaultOpts {repLength=200, scale=0.45}
+    opts = defaultOpts {width=750, height=750, repLength=200, scale=0.5}
 
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)
