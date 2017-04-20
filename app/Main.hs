@@ -16,7 +16,7 @@ main = do
   dImg <- readImage inFile
   let img  = case dImg of
          Left e -> error e
-         Right i -> below' $ toImageRGBA8 i
+         Right i -> tr . antiSymmVertical $ toImageRGBA8 i
   case takeExtension outFile of
      ".png" -> writePng outFile img
      ".tif" -> writeTiff outFile img
@@ -27,10 +27,10 @@ main = do
     below' a = below a a
 
 tr :: (Pixel p, BlackWhite p) => Image p -> Image p
-tr = transform opts (p3m1 coefs)
+tr = morph opts (p4g coefs) 0.1
   where
     opts :: Options Double
-    opts = defaultOpts {width=750, height=750, repLength=200, scale=0.5}
+    opts = defaultOpts {width=1500, height=500, repLength=100, scale=0.5}
 
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)
