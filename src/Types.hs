@@ -18,6 +18,8 @@ module Types
   ( Coef(..)
   , Options(..)
   , defaultOpts
+  , SymmetryGroup(..)
+  , Wallpaper(..)
   , Recipe
   , Img(..)
   , Invertible(..)
@@ -48,10 +50,10 @@ data Options a = Options
   }
 
 -- | The defaul 'Options' creates a square 750 x 750 pixel image,
---   with a repeat of 200 pixels and scales the pixel lookup coordintes
---   by half.
+--   with a repeat of 150 pixels and scales the pixel lookup coordintes
+--   by 1/2.
 defaultOpts :: Options Double
-defaultOpts = Options 750 750 200 0.5
+defaultOpts = Options 750 750 150 0.5
 
 -- | Things that symmetry images and be output as.
 class Img a where
@@ -66,8 +68,41 @@ instance Pixel p => Img (Image p) where
   type Pxl (Image p) = p
   getPxl      = pixelAt
   generateImg = generateImage
-  imgWidth    = imageWidth
-  imgHeight   = imageHeight
+  imgWidth = imageWidth
+  imgHeight = imageHeight
+
+-- | The 17 Wallpaper groups and 7 Frieze groups.
+data SymmetryGroup a
+  = P1 a a
+  | P2 a a
+  | CM a
+  | CMM a
+  | PM a
+  | PG a
+  | PMM a
+  | PMG a
+  | PGG a
+  | P4
+  | P4M
+  | P4G
+  | P3
+  | P31M
+  | P3M1
+  | P6
+  | P6M
+  | P111
+  | P211
+  | P1M1
+  | P11M
+  | P11G
+  | P2MM
+  | P2MG
+  deriving (Show, Eq, Functor)
+
+data Wallpaper a = Wallpaper
+  { wpOptions :: Options a
+  , wpGroup   :: SymmetryGroup a
+  , wpCoefs   :: [Coef a]}
 
 ---------------------------------------------------------------------------------
 

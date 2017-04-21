@@ -3,42 +3,33 @@ module Main where
 import           Core
 import           Types
 import           Juicy
+import           Recipe
 import           Recipes.Wallpaper
 import           Recipes.Frieze
 
 import           Data.Complex
 import           Codec.Picture
 import           System.Environment
-import           System.FilePath    (takeExtension)
 
 main :: IO ()
 main = do
-  -- [inFile, outFile] <- getArgs
-  -- dImg <- readImage inFile
-  -- let img  = case dImg of
-  --        Left e -> error e
-  --        Right i -> tr . antiSymmVertical $ toImageRGBA8 i
-  let img = wheelColoring opts (p11m coefs) -- [Coef 1 0 (1.5:+0), Coef 0 1 (0.2:+0)])
-  outFile <- head <$> getArgs
-  case takeExtension outFile of
-     ".png" -> writePng outFile img
-     ".tif" -> writeTiff outFile img
-     ".bmp" -> writeBitmap outFile img
-     -- ".jpg" -> writeJpeg 80 outFile img
-     _      -> writePng outFile img
-  where
-    opts :: Options Double
-    opts = defaultOpts {width=900, height=300, repLength=50}
-
-tr :: (Pixel p, BlackWhite p) => Image p -> Image p
-tr = morph opts (p4g coefs) 0.1
-  where
-    opts :: Options Double
-    opts = defaultOpts {width=1500, height=500, repLength=100, scale=0.5}
+  [inFile, outFile] <- getArgs
+  wallpaper (Wallpaper defaultOpts P4G coefs) inFile outFile
 
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)
         , Coef (-2) 2 (0.2:+(-0.2))
         , Coef 1 (-1) (0.6:+0.1)
         ]
+
+wallpaper :: RealFloat a => Wallpaper a -> FilePath -> FilePath -> IO ()
+wallpaper wp inFile outFile = do
+  dImg              <- readImage inFile
+  let img  = case dImg of
+         Left e -> error e
+         Right i -> symmetry opts rcp (toImageRGBA8 i)
+  writeImage outFile img
+  where
+    opts = wpOptions wp
+    rcp  = recipe (wpGroup wp) (wpCoefs wp)
 

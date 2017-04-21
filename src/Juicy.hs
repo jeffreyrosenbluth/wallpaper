@@ -10,6 +10,21 @@ import           Codec.Picture.Types
 import qualified Data.ByteString.Lazy as L (writeFile)
 import           Data.Word            (Word8)
 import           Data.Complex
+import           System.FilePath      (takeExtension)
+
+symmetryPattern :: RealFloat a
+                  => Options a
+                  -> ([Coef a] -> Recipe a)
+                  -> [Coef a]
+                  -> FilePath
+                  -> FilePath
+                  -> IO ()
+symmetryPattern opts rf cs inFile outFile = do
+  dImg              <- readImage inFile
+  let img  = case dImg of
+         Left e -> error e
+         Right i -> symmetry opts (rf cs) (toImageRGBA8 i)
+  writeImage outFile img
 
 colorWheel :: RealFloat a => Complex a -> PixelRGB8
 colorWheel (phase -> theta)
@@ -30,7 +45,7 @@ wheelColoring opts rcp =
 
 negative :: (Pixel p, Invertible p) => Image p -> Image p
 negative = pixelMap invert
-
+ 
 flipHorizontal :: Pixel a => Image a -> Image a
 flipHorizontal img@(Image w h _) = generateImage g  w h
   where
@@ -89,3 +104,12 @@ writeJpeg :: Word8 -> FilePath -> Image PixelRGBA8 -> IO ()
 writeJpeg quality outFile img = L.writeFile outFile bs
   where
     bs = encodeJpegAtQuality quality (pixelMap (convertPixel . dropTransparency) img)
+
+writeImage :: FilePath -> (Image PixelRGBA8) -> IO ()
+writeImage outFile img = 
+  case takeExtension outFile of
+     ".png" -> writePng outFile img
+     ".tif" -> writeTiff outFile img
+     ".bmp" -> writeBitmap outFile img
+     ".jpg" -> writeJpeg 80 outFile img
+     _      -> writePng outFile img

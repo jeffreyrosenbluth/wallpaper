@@ -19,6 +19,7 @@ library
   exposed-modules:     Core
                      , Complextra
                      , Juicy
+                     , Recipe
                      , Recipes.Wallpaper
                      , Recipes.Frieze
                      , Recipes.Rosette
@@ -26,6 +27,7 @@ library
   build-depends:       base >= 4.7 && < 5
                      , JuicyPixels >= 3.2 && < 3.3
                      , bytestring >= 0.10 && < 0.11
+                     , filepath >= 1.4 && < 1.5
   default-language:    Haskell2010
 
 executable wallpaper-exe
@@ -35,7 +37,6 @@ executable wallpaper-exe
   build-depends:       base
                      , wallpaper
                      , JuicyPixels >= 3.2 && < 3.3
-                     , filepath >= 1.4 && < 1.5
   default-language:    Haskell2010
 
 test-suite wallpaper-test
