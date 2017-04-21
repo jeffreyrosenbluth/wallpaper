@@ -4,6 +4,7 @@ import           Core
 import           Types
 import           Juicy
 import           Recipes.Wallpaper
+import           Recipes.Frieze
 
 import           Data.Complex
 import           Codec.Picture
@@ -17,7 +18,7 @@ main = do
   -- let img  = case dImg of
   --        Left e -> error e
   --        Right i -> tr . antiSymmVertical $ toImageRGBA8 i
-  let img = wheelColoring opts (p6 [Coef 1 1 (1:+0)])
+  let img = wheelColoring opts (p11m coefs) -- [Coef 1 0 (1.5:+0), Coef 0 1 (0.2:+0)])
   outFile <- head <$> getArgs
   case takeExtension outFile of
      ".png" -> writePng outFile img
@@ -27,7 +28,7 @@ main = do
      _      -> writePng outFile img
   where
     opts :: Options Double
-    opts = defaultOpts {width=500, height=500, repLength=100}
+    opts = defaultOpts {width=900, height=300, repLength=50}
 
 tr :: (Pixel p, BlackWhite p) => Image p -> Image p
 tr = morph opts (p4g coefs) 0.1

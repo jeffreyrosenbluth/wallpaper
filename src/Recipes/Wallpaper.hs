@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------
 -- |
--- Module      :  Types
+-- Module      :  Recipes.Wallpaper
 -- Copyright   :  (c) 2017 Jeffrey Rosenbluth
 -- License     :  BSD-style (see LICENSE)
 -- Maintainer  :  jeffrey.rosenbluth@gmail.com
@@ -11,7 +11,7 @@
 -- https://en.wikipedia.org/wiki/Wallpaper_group
 -- and
 -- "Creating Symmetry" by Frank A. Farris, 2015 Princeton University Press
---    Appendices A and B
+--  Appendices A and B
 ---------------------------------------------------------------------------------
 
 module Recipes.Wallpaper

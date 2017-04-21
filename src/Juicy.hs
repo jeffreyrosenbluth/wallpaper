@@ -13,13 +13,12 @@ import           Data.Complex
 
 colorWheel :: RealFloat a => Complex a -> PixelRGB8
 colorWheel (phase -> theta)
-  | theta < -2/3 * pi = PixelRGB8 255 0 0
-  | theta < -1/3 * pi = PixelRGB8 255 255 0
-  | theta < 0         = PixelRGB8 0 255 0
-  | theta < 1/3 * pi  = PixelRGB8 0 255 255
-  | theta < 2/3 * pi  = PixelRGB8 0 0 255
-  | theta < pi        = PixelRGB8 255 0 255
-  | otherwise         = PixelRGB8 0 0 0
+  | theta <= -2/5 * pi = PixelRGB8 25 52 65
+  | theta <= -1/5 * pi = PixelRGB8 62 96 111
+  | theta <=  1/5 * pi = PixelRGB8 145 170 157
+  | theta <=  2/5 * pi = PixelRGB8 209 219 189
+  | theta <=        pi = PixelRGB8 252 255 245
+  | otherwise          = PixelRGB8 255 255 255
 
 wheelColoring :: RealFloat a => Options a -> Recipe a -> Image PixelRGB8
 wheelColoring opts rcp =
