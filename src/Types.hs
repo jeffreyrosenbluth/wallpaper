@@ -1,7 +1,10 @@
 {-# LANGUAGE DeriveFunctor         #-}
+{-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE StrictData            #-}
 {-# LANGUage TypeFamilies          #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
+
+{-# OPTIONS_GHC -fno-warn-orphans  #-}
 
 ---------------------------------------------------------------------------------
 -- |
@@ -27,7 +30,9 @@ module Types
   ) where
 
 import           Codec.Picture
+import           Data.Yaml
 import           Data.Complex (Complex)
+import           GHC.Generics
 
 -- | A 'Recipe' is a mapping from the complex plange to the complex plane.
 type Recipe a = Complex a -> Complex a
@@ -38,7 +43,13 @@ data Coef a = Coef
   { nCoord :: Int       -- ^ The first index.
   , mCoord :: Int       -- ^ The second index.
   , anm    :: Complex a -- ^ The coefficient.
-  } deriving (Show, Eq, Functor)
+  } deriving (Show, Eq, Functor, Generic)
+
+instance ToJSON a => ToJSON (Complex a)
+instance ToJSON a => ToJSON (Coef a)
+
+instance FromJSON a => FromJSON (Complex a)
+instance FromJSON a => FromJSON (Coef a)
 
 -- | Settings for creating a symmetry image.
 data Options a = Options
@@ -47,7 +58,10 @@ data Options a = Options
   , repLength :: Int -- ^ The length of the pattern to repeat.
   , scale     :: a   -- ^ Usually set less than 1, to compensate for the
                      --   fact that the color wheel is not infinite.
-  }
+  } deriving (Show, Eq, Functor, Generic)
+
+instance ToJSON a => ToJSON (Options a)
+instance FromJSON a => FromJSON (Options a)
 
 -- | The defaul 'Options' creates a square 750 x 750 pixel image,
 --   with a repeat of 150 pixels and scales the pixel lookup coordintes
@@ -97,12 +111,22 @@ data SymmetryGroup a
   | P11G
   | P2MM
   | P2MG
-  deriving (Show, Eq, Functor)
+  deriving (Show, Eq, Functor, Generic)
+
+instance ToJSON a => ToJSON (SymmetryGroup a)
+instance FromJSON a => FromJSON (SymmetryGroup a)
 
 data Wallpaper a = Wallpaper
   { wpOptions :: Options a
   , wpGroup   :: SymmetryGroup a
-  , wpCoefs   :: [Coef a]}
+  , wpCoefs   :: [Coef a]
+  , wpWheel   :: FilePath
+  , wpPath    :: FilePath
+  }
+  deriving (Show, Eq, Functor, Generic)
+
+instance ToJSON a => ToJSON (Wallpaper a)
+instance FromJSON a => FromJSON (Wallpaper a)
 
 ---------------------------------------------------------------------------------
 

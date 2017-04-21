@@ -28,6 +28,7 @@ library
                      , JuicyPixels >= 3.2 && < 3.3
                      , bytestring >= 0.10 && < 0.11
                      , filepath >= 1.4 && < 1.5
+                     , yaml >= 0.8 && < 0.9
   default-language:    Haskell2010
 
 executable wallpaper-exe
@@ -37,6 +38,7 @@ executable wallpaper-exe
   build-depends:       base
                      , wallpaper
                      , JuicyPixels >= 3.2 && < 3.3
+                     , yaml >= 0.8 && < 0.9
   default-language:    Haskell2010
 
 test-suite wallpaper-test

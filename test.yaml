@@ -1,0 +1,28 @@
+wpGroup:
+  tag: P2
+  contents:
+  - 2
+  - 3
+wpOptions:
+  height: 750
+  scale: 0.5
+  width: 750
+  repLength: 150
+wpCoefs:
+- anm:
+  - 0.75
+  - 0.25
+  mCoord: 0
+  nCoord: 1
+- anm:
+  - 0.2
+  - -0.2
+  mCoord: 2
+  nCoord: -2
+- anm:
+  - 0.6
+  - 0.1
+  mCoord: -1
+  nCoord: 1
+wpWheel: "beach2.jpg"
+wpPath: "path.jpg"
