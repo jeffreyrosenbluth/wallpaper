@@ -12,19 +12,22 @@ import           System.FilePath    (takeExtension)
 
 main :: IO ()
 main = do
-  [inFile, outFile] <- getArgs
-  dImg <- readImage inFile
-  let img  = case dImg of
-         Left e -> error e
-         Right i -> tr . antiSymmVertical $ toImageRGBA8 i
+  -- [inFile, outFile] <- getArgs
+  -- dImg <- readImage inFile
+  -- let img  = case dImg of
+  --        Left e -> error e
+  --        Right i -> tr . antiSymmVertical $ toImageRGBA8 i
+  let img = wheelColoring opts (p6 [Coef 1 1 (1:+0)])
+  outFile <- head <$> getArgs
   case takeExtension outFile of
      ".png" -> writePng outFile img
      ".tif" -> writeTiff outFile img
      ".bmp" -> writeBitmap outFile img
-     ".jpg" -> writeJpeg 80 outFile img
+     -- ".jpg" -> writeJpeg 80 outFile img
      _      -> writePng outFile img
   where
-    below' a = below a a
+    opts :: Options Double
+    opts = defaultOpts {width=500, height=500, repLength=100}
 
 tr :: (Pixel p, BlackWhite p) => Image p -> Image p
 tr = morph opts (p4g coefs) 0.1

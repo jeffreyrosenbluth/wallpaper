@@ -1,21 +1,26 @@
 {-# LANGUAGE FlexibleContexts      #-}
 
--------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 -- |
 -- Module      :  Core
 -- Copyright   :  (c) 2017 Jeffrey Rosenbluth
 -- License     :  BSD-style (see LICENSE)
 -- Maintainer  :  jeffrey.rosenbluth@gmail.com
 --
--- Tools for creating domain colorings
--------------------------------------------------------------------------------
+-- Tools for creating symmtery images using the domain coloring algortihm.
+---------------------------------------------------------------------------------
 
 module Core
-  ( getColor
-  , symmetry
+  (
+    -- * Domain Coloring
+    symmetry
   , blend
   , morph
   , mkRecipe
+  , getColor
+  , focusIn
+
+    -- * Coefficients
   , negateCoefs
   , negateFst
   , negateSnd
@@ -23,13 +28,16 @@ module Core
   , alternateCoefs
   ) where
 
-import           Types
 import           Complextra
+import           Types
 
 import           Data.Complex
 
--- | Creates a function to get the color of pixel (i, j) from a color wheel (iamge)
---   given 'Options', a 'Recipe' and the color wheel.
+-- Domain Coloring -------------------------------------------------------------
+
+-- | Creates a function to get the color of pixel (i, j) from a color wheel
+--   given 'Options', a 'Recipe' and the color wheel. You shouldn't need to
+--   use this function directly.
 getColor :: (RealFloat a, Img i, BlackWhite (Pxl i))
           => Options a -> Recipe a -> i -> Int -> Int -> Pxl i
 getColor opts rcp wheel i j = clamp (round x + w1 `div` 2) (round y + h1 `div` 2)
@@ -55,7 +63,9 @@ focusIn w h l rcp (x :+ y) =
 -- | Make a symmetry image from a set of 'Options', a 'Recipe' and a color wheel.
 symmetry :: (RealFloat a, Img i, BlackWhite (Pxl i))
           => Options a -> Recipe a -> i -> i
-symmetry opts rcp wheel = generateImg (getColor opts rcp wheel) (width opts) (height opts)
+symmetry opts rcp wheel = generateImg (getColor opts rcp wheel)
+                                      (width opts)
+                                      (height opts)
 
 -- | Make a symmetry image from two 'Recipe's by linearly interpolation.
 --   The interpolation is along the horizontal axis.
@@ -88,6 +98,8 @@ mkRecipe rf cs z = sum $ zipWith (*) as rs
   where
     as = anm <$> cs
     rs = ($ z) . uncurry rf <$> [(nCoord c, mCoord c) | c <- cs]
+
+-- Coefficients ----------------------------------------------------------------
 
 -- | Negate the indices of a coefficient.
 negateCoefs :: Coef a -> Coef a

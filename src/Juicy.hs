@@ -1,11 +1,33 @@
+{-# LANGUAGE ViewPatterns #-}
+
 module Juicy where
 
+import           Core
 import           Types
 
 import           Codec.Picture
 import           Codec.Picture.Types
 import qualified Data.ByteString.Lazy as L (writeFile)
 import           Data.Word            (Word8)
+import           Data.Complex
+
+colorWheel :: RealFloat a => Complex a -> PixelRGB8
+colorWheel (phase -> theta)
+  | theta < -2/3 * pi = PixelRGB8 255 0 0
+  | theta < -1/3 * pi = PixelRGB8 255 255 0
+  | theta < 0         = PixelRGB8 0 255 0
+  | theta < 1/3 * pi  = PixelRGB8 0 255 255
+  | theta < 2/3 * pi  = PixelRGB8 0 0 255
+  | theta < pi        = PixelRGB8 255 0 255
+  | otherwise         = PixelRGB8 0 0 0
+
+wheelColoring :: RealFloat a => Options a -> Recipe a -> Image PixelRGB8
+wheelColoring opts rcp =
+  generateImage (\i j -> colorWheel . get $ (fromIntegral i :+ fromIntegral j))
+                (width opts)
+                (height opts)
+  where
+    get = focusIn (width opts) (height opts) (repLength opts) rcp
 
 negative :: (Pixel p, Invertible p) => Image p -> Image p
 negative = pixelMap invert
