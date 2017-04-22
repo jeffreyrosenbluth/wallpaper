@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveFunctor         #-}
 {-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE StrictData            #-}
 {-# LANGUage TypeFamilies          #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
@@ -31,7 +33,7 @@ module Types
 
 import           Codec.Picture
 import           Data.Yaml
-import           Data.Complex (Complex)
+import           Data.Complex
 import           GHC.Generics
 
 -- | A 'Recipe' is a mapping from the complex plange to the complex plane.
@@ -45,11 +47,19 @@ data Coef a = Coef
   , anm    :: Complex a -- ^ The coefficient.
   } deriving (Show, Eq, Functor, Generic)
 
-instance ToJSON a => ToJSON (Complex a)
-instance ToJSON a => ToJSON (Coef a)
+instance FromJSON a => FromJSON (Complex a) where
+  parseJSON a@(Array _) = do
+    (r, i) <- parseJSON a
+    return $ r :+ i
+  parseJSON _ = fail "Expected Array for a Complex value."
 
-instance FromJSON a => FromJSON (Complex a)
-instance FromJSON a => FromJSON (Coef a)
+instance FromJSON a => FromJSON (Coef a) where
+  parseJSON (Object v)
+    =   Coef
+    <$> v .: "n"
+    <*> v .: "m"
+    <*> v .: "A(n,m)"
+  parseJSON _ = fail "Expected Object for Coef value."
 
 -- | Settings for creating a symmetry image.
 data Options a = Options
@@ -60,8 +70,14 @@ data Options a = Options
                      --   fact that the color wheel is not infinite.
   } deriving (Show, Eq, Functor, Generic)
 
-instance ToJSON a => ToJSON (Options a)
-instance FromJSON a => FromJSON (Options a)
+instance FromJSON a => FromJSON (Options a) where
+  parseJSON (Object v)
+    =   Options
+    <$> v .: "width"
+    <*> v .: "height"
+    <*> v .: "repeat-length"
+    <*> v .: "scale-factor"
+  parseJSON _ = fail "Expected Object for a Options value."
 
 -- | The defaul 'Options' creates a square 750 x 750 pixel image,
 --   with a repeat of 150 pixels and scales the pixel lookup coordintes
@@ -113,8 +129,51 @@ data SymmetryGroup a
   | P2MG
   deriving (Show, Eq, Functor, Generic)
 
-instance ToJSON a => ToJSON (SymmetryGroup a)
-instance FromJSON a => FromJSON (SymmetryGroup a)
+instance FromJSON a => FromJSON (SymmetryGroup a) where
+  parseJSON (Object v) = do
+    (name :: String) <- v .: "Name"
+    case name of
+      "p1" -> P1 <$> v .: "xi" <*> v .: "eta"
+      "p2" -> P2 <$> v .: "xi" <*> v .: "eta"
+      "cm" -> CM <$> v .: "b"
+      "cmm" -> CMM <$> v .: "b"
+      "pm"  -> PM <$> v .: "L"
+      "pg"  -> PG <$> v .: "L"
+      "pmm" -> PMM <$> v .: "L"
+      "pmg" -> PMG <$> v .: "L"
+      "pgg" -> PGG <$> v .: "L"
+      "p4" -> pure P4
+      "p4m" -> pure P4M
+      "p4G" -> pure P4G
+      "p3" -> pure P3
+      "p31m" -> pure P31M
+      "p3m1" -> pure P3M1
+      "p6"   -> pure P6
+      "p6m"  -> pure P6M
+      "p111" -> pure P111
+      "p211" -> pure P211
+      "p1m1" -> pure P1M1
+      "p11m" -> pure P11M
+      "p11g" -> pure P11G
+      "p2mm" -> pure P2MM
+      "p2mg" -> pure P2MG
+      _      -> fail "Tried to parse an invalid group name."
+  parseJSON (String "p4")   = pure P4
+  parseJSON (String "p4m")  = pure P4M
+  parseJSON (String "p4g")  = pure P4G
+  parseJSON (String "p3")   = pure P3
+  parseJSON (String "p31m") = pure P31M
+  parseJSON (String "p3m1") = pure P3M1
+  parseJSON (String "p6")   = pure P6
+  parseJSON (String "p6M")  = pure P6M
+  parseJSON (String "p111") = pure P111
+  parseJSON (String "p211") = pure P211
+  parseJSON (String "p1m1") = pure P1M1
+  parseJSON (String "p11m") = pure P11M
+  parseJSON (String "p11g") = pure P11G
+  parseJSON (String "p2mm") = pure P2MM
+  parseJSON (String "p2mg") = pure P2MG
+  parseJSON _ = fail "Group must be an object of String"
 
 data Wallpaper a = Wallpaper
   { wpOptions :: Options a
@@ -125,8 +184,15 @@ data Wallpaper a = Wallpaper
   }
   deriving (Show, Eq, Functor, Generic)
 
-instance ToJSON a => ToJSON (Wallpaper a)
-instance FromJSON a => FromJSON (Wallpaper a)
+instance FromJSON a => FromJSON (Wallpaper a) where
+  parseJSON (Object v)
+    =   Wallpaper
+    <$> v .: "Options"
+    <*> v .: "Group"
+    <*> v .: "Coefficients"
+    <*> v .: "Colorwheel-path"
+    <*> v .: "Output-path"
+  parseJSON _ = fail "Expected Object for Wallpaper value."
 
 ---------------------------------------------------------------------------------
 

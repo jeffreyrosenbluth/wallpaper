@@ -10,7 +10,7 @@
 -- For more detailed descriptions of the various symmetry groups see:
 -- https://en.wikipedia.org/wiki/Wallpaper_group
 -- and
--- "Creating Symmetry" by Frank A. Farris, 2015 Princeton University Press
+-- "Creating Symmetry" by Frank A. Farris, 2015 Princeton University Press,
 --  Appendices A and B
 ---------------------------------------------------------------------------------
 

@@ -1,28 +1,18 @@
-wpGroup:
-  tag: P2
-  contents:
-  - 2
-  - 3
-wpOptions:
-  height: 750
-  scale: 0.5
+Options:
   width: 750
-  repLength: 150
-wpCoefs:
-- anm:
-  - 0.75
-  - 0.25
-  mCoord: 0
-  nCoord: 1
-- anm:
-  - 0.2
-  - -0.2
-  mCoord: 2
-  nCoord: -2
-- anm:
-  - 0.6
-  - 0.1
-  mCoord: -1
-  nCoord: 1
-wpWheel: "beach2.jpg"
-wpPath: "path.jpg"
+  height: 750
+  repeat-length: 150
+  scale-factor: 0.25
+Group: p6
+Coefficients:
+- A(n,m): [0.75, 0.25]
+  m: 0
+  n: 1
+- A(n,m): [0.2, -0.2]
+  m: 2
+  n: -2
+- A(n,m): [0.6, 0.1]
+  m: -1
+  n: 1
+Colorwheel-path: "LeopardLily.jpg"
+Output-path: "lilly.jpg"
