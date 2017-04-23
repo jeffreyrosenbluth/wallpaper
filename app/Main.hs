@@ -8,17 +8,17 @@ import           Juicy
 import           Recipe
 
 import           Data.Complex
-import           Data.Yaml          (decodeFile)
+import           Data.Yaml          (decodeFileEither, ParseException)
 import           Codec.Picture
 import           System.Environment
 
 main :: IO ()
 main = do
   [yamlFile] <- getArgs
-  (wp :: Maybe (Wallpaper Double)) <- decodeFile yamlFile
+  (wp :: Either ParseException (Wallpaper Double)) <- decodeFileEither yamlFile
   case wp of
-    Nothing -> error "cannot parse yaml file"
-    Just w  -> wallpaper w 
+    Left e   -> error (show e)
+    Right w  -> wallpaper w 
 
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)

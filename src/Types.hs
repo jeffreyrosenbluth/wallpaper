@@ -1,5 +1,4 @@
 {-# LANGUAGE DeriveFunctor         #-}
-{-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE StrictData            #-}
@@ -34,7 +33,6 @@ module Types
 import           Codec.Picture
 import           Data.Yaml
 import           Data.Complex
-import           GHC.Generics
 
 -- | A 'Recipe' is a mapping from the complex plange to the complex plane.
 type Recipe a = Complex a -> Complex a
@@ -45,7 +43,7 @@ data Coef a = Coef
   { nCoord :: Int       -- ^ The first index.
   , mCoord :: Int       -- ^ The second index.
   , anm    :: Complex a -- ^ The coefficient.
-  } deriving (Show, Eq, Functor, Generic)
+  } deriving (Show, Eq, Functor)
 
 instance FromJSON a => FromJSON (Complex a) where
   parseJSON a@(Array _) = do
@@ -68,7 +66,7 @@ data Options a = Options
   , repLength :: Int -- ^ The length of the pattern to repeat.
   , scale     :: a   -- ^ Usually set less than 1, to compensate for the
                      --   fact that the color wheel is not infinite.
-  } deriving (Show, Eq, Functor, Generic)
+  } deriving (Show, Eq, Functor)
 
 instance FromJSON a => FromJSON (Options a) where
   parseJSON (Object v)
@@ -127,25 +125,25 @@ data SymmetryGroup a
   | P11G
   | P2MM
   | P2MG
-  deriving (Show, Eq, Functor, Generic)
+  deriving (Show, Eq, Functor)
 
 instance FromJSON a => FromJSON (SymmetryGroup a) where
   parseJSON (Object v) = do
     (name :: String) <- v .: "Name"
     case name of
-      "p1" -> P1 <$> v .: "xi" <*> v .: "eta"
-      "p2" -> P2 <$> v .: "xi" <*> v .: "eta"
-      "cm" -> CM <$> v .: "b"
-      "cmm" -> CMM <$> v .: "b"
-      "pm"  -> PM <$> v .: "L"
-      "pg"  -> PG <$> v .: "L"
-      "pmm" -> PMM <$> v .: "L"
-      "pmg" -> PMG <$> v .: "L"
-      "pgg" -> PGG <$> v .: "L"
-      "p4" -> pure P4
-      "p4m" -> pure P4M
-      "p4G" -> pure P4G
-      "p3" -> pure P3
+      "p1"   -> P1  <$> v .: "xi" <*> v .: "eta"
+      "p2"   -> P2  <$> v .: "xi" <*> v .: "eta"
+      "cm"   -> CM  <$> v .: "b"
+      "cmm"  -> CMM <$> v .: "b"
+      "pm"   -> PM  <$> v .: "L"
+      "pg"   -> PG  <$> v .: "L"
+      "pmm"  -> PMM <$> v .: "L"
+      "pmg"  -> PMG <$> v .: "L"
+      "pgg"  -> PGG <$> v .: "L"
+      "p4"   -> pure P4
+      "p4m"  -> pure P4M
+      "p4G"  -> pure P4G
+      "p3"   -> pure P3
       "p31m" -> pure P31M
       "p3m1" -> pure P3M1
       "p6"   -> pure P6
@@ -176,20 +174,20 @@ instance FromJSON a => FromJSON (SymmetryGroup a) where
   parseJSON _ = fail "Group must be an object of String"
 
 data Wallpaper a = Wallpaper
-  { wpOptions :: Options a
-  , wpGroup   :: SymmetryGroup a
+  { wpGroup   :: SymmetryGroup a
   , wpCoefs   :: [Coef a]
+  , wpOptions :: Options a
   , wpWheel   :: FilePath
   , wpPath    :: FilePath
   }
-  deriving (Show, Eq, Functor, Generic)
+  deriving (Show, Eq, Functor)
 
 instance FromJSON a => FromJSON (Wallpaper a) where
   parseJSON (Object v)
     =   Wallpaper
-    <$> v .: "Options"
-    <*> v .: "Group"
+    <$> v .: "Group"
     <*> v .: "Coefficients"
+    <*> v .: "Options"
     <*> v .: "Colorwheel-path"
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Wallpaper value."

@@ -19,19 +19,19 @@ module Recipes.Wallpaper
    -- * Wallpaper Groups
 
    -- ** Generic Lattice
-   -- | Lattice vectors: 1, xi + i * eta.
+   -- | Lattice vectors: __1, xi + i * eta__.
    genericLattice
   , p1
   , p2
 
    -- ** Rhombic (Centered) Lattice
-   -- | Lattice vectors: 1/2 + i * b, 1/2 - i * b.
+   -- | Lattice vectors: __1//2 + i * b, 1//2 - i * b__.
   , rhombicLattice
   , cm
   , cmm
 
    -- ** Rectangular Lattice
-   -- | Lattice vectors: 1, i * l
+   -- | Lattice vectors: __1, i * l__.
   , rectangularLattice
   , pm
   , pg
@@ -40,14 +40,14 @@ module Recipes.Wallpaper
   , pgg
 
    -- ** Square Lattice
-   -- | Lattice vectors: 1, i
+   -- | Lattice vectors: __1, i__.
   , squareLattice
   , p4
   , p4m
   , p4g
 
    -- ** Hexagonal Lattice
-   -- | Lattice vectors: 1, (-1 + i * sqrt(3)) / 2
+   -- | Lattice vectors: __1, (-1 + i * sqrt(3)) // 2__.
   , hexagonalLattice
   , p3
   , p31m
