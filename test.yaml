@@ -1,4 +1,4 @@
-Group: p1
+Group: p211
 Coefficients:
 - A(n,m): [0.75, 0.25]
   m: 0
@@ -10,9 +10,9 @@ Coefficients:
   m: -1
   n: 1
 Options:
-  width: 750
-  height: 750
-  repeat-length: 150
-  scale-factor: 0.25
+  width: 1000
+  height: 500
+  repeat-length: 25
+  scale-factor: 0.5
 Colorwheel-path: "LeopardLily.jpg"
-Output-path: "lilly.jpg"
+Output-path: "lilly_frieze.jpg"
