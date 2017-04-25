@@ -1,4 +1,4 @@
-Group: p211
+Group: p4
 Coefficients:
 - A(n,m): [0.75, 0.25]
   m: 0
@@ -9,10 +9,13 @@ Coefficients:
 - A(n,m): [0.6, 0.1]
   m: -1
   n: 1
+Type:
+  style: blend
+  group : p4g
 Options:
   width: 1000
   height: 500
-  repeat-length: 25
+  repeat-length: 150
   scale-factor: 0.5
 Colorwheel-path: "LeopardLily.jpg"
 Output-path: "lilly_frieze.jpg"

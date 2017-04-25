@@ -23,6 +23,7 @@ module Types
   , Options(..)
   , defaultOpts
   , SymmetryGroup(..)
+  , WPtype(..)
   , Wallpaper(..)
   , Recipe
   , Img(..)
@@ -127,6 +128,22 @@ data SymmetryGroup a
   | P2MG
   deriving (Show, Eq, Functor)
 
+data WPtype a
+  = Plain
+  | Morph a
+  | Blend (SymmetryGroup a)
+  deriving (Show, Eq, Functor)
+
+instance FromJSON a => FromJSON (WPtype a) where
+  parseJSON (Object v) = do
+    (typ :: String) <- v .: "style"
+    case typ of
+      "plain" -> pure Plain
+      "morph" -> Morph <$> v .: "cutoff"
+      "blend" -> Blend <$> v .: "group"
+      _       -> fail "Tried to parse an invalide wallpaper type."
+  parseJSON _ = fail "Expected a String for the wallpaper type."
+
 instance FromJSON a => FromJSON (SymmetryGroup a) where
   parseJSON (Object v) = do
     (name :: String) <- v .: "Name"
@@ -171,11 +188,12 @@ instance FromJSON a => FromJSON (SymmetryGroup a) where
   parseJSON (String "p11g") = pure P11G
   parseJSON (String "p2mm") = pure P2MM
   parseJSON (String "p2mg") = pure P2MG
-  parseJSON _ = fail "Group must be an object of String"
+  parseJSON _ = fail "Group must be an object or String"
 
 data Wallpaper a = Wallpaper
   { wpGroup   :: SymmetryGroup a
   , wpCoefs   :: [Coef a]
+  , wpType    :: WPtype a
   , wpOptions :: Options a
   , wpWheel   :: FilePath
   , wpPath    :: FilePath
@@ -187,13 +205,13 @@ instance FromJSON a => FromJSON (Wallpaper a) where
     =   Wallpaper
     <$> v .: "Group"
     <*> v .: "Coefficients"
+    <*> v .: "Type"
     <*> v .: "Options"
     <*> v .: "Colorwheel-path"
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Wallpaper value."
 
 ---------------------------------------------------------------------------------
-
 -- | Pixels that can be set to black and white.
 class BlackWhite a where
   black :: a
@@ -224,7 +242,6 @@ instance BlackWhite PixelCMYK8 where
   white = PixelCMYK8 0 0 0 0
 
 ---------------------------------------------------------------------------------
-
 -- | Invert the color of a pixel.
 class Invertible a where
   invert :: a -> a

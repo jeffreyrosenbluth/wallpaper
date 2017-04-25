@@ -4,6 +4,7 @@ module Juicy where
 
 import           Core
 import           Types
+import           Recipe
 
 import           Codec.Picture
 import           Codec.Picture.Types
@@ -16,14 +17,18 @@ symmetryPattern :: RealFloat a
                   => Options a
                   -> ([Coef a] -> Recipe a)
                   -> [Coef a]
+                  -> WPtype a
                   -> FilePath
                   -> FilePath
                   -> IO ()
-symmetryPattern opts rf cs inFile outFile = do
-  dImg              <- readImage inFile
+symmetryPattern opts rf cs typ inFile outFile = do
+  dImg <- readImage inFile
   let img  = case dImg of
-         Left e -> error e
-         Right i -> symmetry opts (rf cs) (toImageRGBA8 i)
+         Left e  -> error e
+         Right i -> case typ of
+           Plain -> symmetry opts (rf cs) (toImageRGBA8 i)
+           Morph c -> morph opts (rf cs) c (toImageRGBA8 i)
+           Blend g -> blend opts (rf cs) (recipe g cs) (toImageRGBA8 i)
   writeImage outFile img
 
 colorWheel :: RealFloat a => Complex a -> PixelRGB8

@@ -27,9 +27,9 @@ coefs = [ Coef 1 0 (0.75:+0.25)
         ]
 
 wallpaper :: RealFloat a => Wallpaper a -> IO ()
-wallpaper wp = do
-  dImg  <- readImage (wpWheel wp)
-  let img  = case dImg of
-         Left e -> error e
-         Right i -> symmetry (wpOptions wp) (recipe (wpGroup wp) (wpCoefs wp)) (toImageRGBA8 i)
-  writeImage (wpPath wp) img
+wallpaper wp = symmetryPattern (wpOptions wp)
+                               (recipe (wpGroup wp))
+                               (wpCoefs wp)
+                               (wpType wp)
+                               (wpWheel wp)
+                               (wpPath wp)
