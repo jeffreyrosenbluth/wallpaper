@@ -1,6 +1,37 @@
 {-# LANGUAGE ViewPatterns #-}
 
-module Juicy where
+---------------------------------------------------------------------------------
+-- |
+-- Module      :  Juicy
+-- Copyright   :  (c) 2017 Jeffrey Rosenbluth
+-- License     :  BSD-style (see LICENSE)
+-- Maintainer  :  jeffrey.rosenbluth@gmail.com
+--
+-- Tools for creating symmtery images specific to JuicyPixels.
+---------------------------------------------------------------------------------
+
+module Juicy
+  (
+   -- * Wallpaper Generation
+    symmetryPattern
+  , colorWheel
+  , wheelColoring
+
+  -- * Image Processing
+  , negative
+  , flipVertical
+  , flipHorizontal
+  , flipBoth
+  , beside
+  , below
+  , antiSymmHorizontal
+  , antiSymmVertical
+
+  -- * JuicyPixels Utilities
+  , toImageRGBA8
+  , writeJpeg
+  , writeImage
+  ) where
 
 import           Core
 import           Types
@@ -12,6 +43,8 @@ import qualified Data.ByteString.Lazy as L (writeFile)
 import           Data.Word            (Word8)
 import           Data.Complex
 import           System.FilePath      (takeExtension)
+
+-- Wallpaper Generation --------------------------------------------------------
 
 symmetryPattern :: RealFloat a
                   => Options a
@@ -47,6 +80,8 @@ wheelColoring opts rcp =
                 (height opts)
   where
     get = focusIn (width opts) (height opts) (repLength opts) rcp
+
+-- Image Processing -------------------------------------------------------------
 
 negative :: (Pixel p, Invertible p) => Image p -> Image p
 negative = pixelMap invert
@@ -95,6 +130,7 @@ antiSymmVertical :: (Pixel a, Invertible a) => Image a -> Image a
 antiSymmVertical img = beside img (flipVertical . negative $ img)
 {-# INLINEABLE antiSymmVertical #-}
 
+-- Utilities --------------------------------------------------------------------
 
 toImageRGBA8 :: DynamicImage -> Image PixelRGBA8
 toImageRGBA8 (ImageRGBA8 i)  = i
@@ -110,7 +146,9 @@ writeJpeg quality outFile img = L.writeFile outFile bs
   where
     bs = encodeJpegAtQuality quality (pixelMap (convertPixel . dropTransparency) img)
 
-writeImage :: FilePath -> (Image PixelRGBA8) -> IO ()
+-- | Write an image file to disk, the image type depends on the file extension
+--   of the output file name.
+writeImage :: FilePath -> Image PixelRGBA8 -> IO ()
 writeImage outFile img = 
   case takeExtension outFile of
      ".png" -> writePng outFile img
