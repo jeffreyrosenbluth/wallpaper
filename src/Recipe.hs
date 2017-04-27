@@ -1,8 +1,8 @@
 module Recipe where
 
-import           Types
-import           Recipes.Wallpaper
 import           Recipes.Frieze
+import           Recipes.Wallpaper
+import           Types
 
 -- Recip Builder ---------------------------------------------------------------
 

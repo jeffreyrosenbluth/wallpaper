@@ -61,12 +61,12 @@ module Recipes.Wallpaper
   , wnm
   ) where
 
-import           Types
-import           Core
 import           Complextra
+import           Core
+import           Types
 
 import           Data.Complex
-import           Data.List     (nub)
+import           Data.List    (nub)
 
 -- Wave functions --------------------------------------------------------------
 

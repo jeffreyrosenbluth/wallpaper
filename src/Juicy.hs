@@ -18,7 +18,7 @@ module Juicy
   , wheelColoring
 
   -- * Image Processing
-  , negative
+  , invertImage
   , flipVertical
   , flipHorizontal
   , flipBoth
@@ -34,18 +34,21 @@ module Juicy
   ) where
 
 import           Core
-import           Types
 import           Recipe
+import           Types
 
 import           Codec.Picture
 import           Codec.Picture.Types
 import qualified Data.ByteString.Lazy as L (writeFile)
-import           Data.Word            (Word8)
 import           Data.Complex
+import           Data.Word            (Word8)
+import           Numeric              (readHex, showHex)
 import           System.FilePath      (takeExtension)
+import           System.Random
 
 -- Wallpaper Generation --------------------------------------------------------
 
+-- | Crate a wallpaper and write it to an output file.
 symmetryPattern :: RealFloat a
                   => Options a
                   -> ([Coef a] -> Recipe a)
@@ -61,26 +64,40 @@ symmetryPattern opts rf cs typ pp inFile outFile = do
          Left e  -> error e
          Right i ->  let img' = preProcess pp . toImageRGBA8 $ i
                      in case typ of
-           Plain -> symmetry opts (rf cs) img'
+           Plain   -> symmetry opts (rf cs) img'
            Morph c -> morph opts (rf cs) c img'
            Blend g -> blend opts (rf cs) (recipe g cs) img'
   writeImage outFile img
 
+int2rgb :: Int -> PixelRGB8
+int2rgb n = PixelRGB8 r g b
+  where
+    hex = showHex n ""
+    (hr, xs) = splitAt 2 hex
+    (hg, hb) = splitAt 2 xs
+    [(r, _)] = readHex hr
+    [(g, _)] = readHex hg
+    [(b, _)] = readHex hb
+
+-- | A Color wheel on the entire complex plane.
 colorWheel :: RealFloat a => Complex a -> PixelRGB8
 colorWheel (phase -> theta)
-  | theta <= -2/5 * pi = PixelRGB8 25 52 65
-  | theta <= -1/5 * pi = PixelRGB8 62 96 111
-  | theta <=  1/5 * pi = PixelRGB8 145 170 157
-  | theta <=  2/5 * pi = PixelRGB8 209 219 189
-  | theta <=        pi = PixelRGB8 252 255 245
-  | otherwise          = PixelRGB8 255 255 255
+  | theta <= -2/3 * pi = int2rgb $ rs !! 0
+  | theta <= -1/3 * pi = int2rgb $ rs !! 1
+  | theta <= 0    * pi = int2rgb $ rs !! 2
+  | theta <=  1/3 * pi = int2rgb $ rs !! 3
+  | theta <=  2/3 * pi = int2rgb $ rs !! 4
+  | theta <=        pi = int2rgb $ rs !! 5
+  | otherwise          = int2rgb $ rs !! 6
+  where
+    rs = floor . (* 16777215) <$> randomRs (0.1 :: Double, 0.9) (mkStdGen 0)
 
 preProcess :: (Pixel p, Invertible p) => PreProcess -> Image p -> Image p
 preProcess process = case process of
   FlipHorizontal     -> flipHorizontal
   FlipVertical       -> flipVertical
   FlipBoth           -> flipBoth
-  Invert             -> negative
+  Invert             -> invertImage
   AntiSymmHorizontal -> antiSymmHorizontal
   AntiSymmVertical   -> antiSymmVertical
   None               -> id
@@ -95,9 +112,9 @@ wheelColoring opts rcp =
 
 -- Image Processing -------------------------------------------------------------
 
-negative :: (Pixel p, Invertible p) => Image p -> Image p
-negative = pixelMap invert
- 
+invertImage :: (Pixel p, Invertible p) => Image p -> Image p
+invertImage = pixelMap invert
+
 flipHorizontal :: Pixel a => Image a -> Image a
 flipHorizontal img@(Image w h _) = generateImage g  w h
   where
@@ -135,11 +152,11 @@ below img1@(Image w h1 _) img2@(Image _ h2 _) =
 {-# INLINEABLE below #-}
 
 antiSymmHorizontal :: (Pixel a, Invertible a) => Image a -> Image a
-antiSymmHorizontal img = below img (flipHorizontal . negative $ img)
+antiSymmHorizontal img = below img (flipHorizontal . invertImage $ img)
 {-# INLINEABLE antiSymmHorizontal #-}
 
 antiSymmVertical :: (Pixel a, Invertible a) => Image a -> Image a
-antiSymmVertical img = beside img (flipVertical . negative $ img)
+antiSymmVertical img = beside img (flipVertical . invertImage $ img)
 {-# INLINEABLE antiSymmVertical #-}
 
 -- Utilities --------------------------------------------------------------------
@@ -161,7 +178,7 @@ writeJpeg quality outFile img = L.writeFile outFile bs
 -- | Write an image file to disk, the image type depends on the file extension
 --   of the output file name.
 writeImage :: FilePath -> Image PixelRGBA8 -> IO ()
-writeImage outFile img = 
+writeImage outFile img =
   case takeExtension outFile of
      ".png" -> writePng outFile img
      ".tif" -> writeTiff outFile img

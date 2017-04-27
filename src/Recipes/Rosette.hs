@@ -1,7 +1,7 @@
 module Recipes.Rosette where
 
-import           Types
 import           Data.Complex
+import           Types
 
 recipe5 :: RealFloat a => Complex a -> Complex a -> Recipe a
 recipe5 a b z = z**5 + z'**5

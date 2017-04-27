@@ -1,9 +1,9 @@
-{-# LANGUAGE DeriveFunctor         #-}
-{-# LANGUAGE OverloadedStrings     #-}
-{-# LANGUAGE ScopedTypeVariables   #-}
-{-# LANGUAGE StrictData            #-}
-{-# LANGUage TypeFamilies          #-}
-{-# LANGUAGE TypeSynonymInstances  #-}
+{-# LANGUAGE DeriveFunctor        #-}
+{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE StrictData           #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 
 {-# OPTIONS_GHC -fno-warn-orphans  #-}
 
@@ -33,9 +33,9 @@ module Types
   ) where
 
 import           Codec.Picture
-import           Data.Yaml
 import           Data.Complex
 import           Data.Text     (Text, toLower)
+import           Data.Yaml
 
 -- | A 'Recipe' is a mapping from the complex plange to the complex plane.
 type Recipe a = Complex a -> Complex a
@@ -148,7 +148,7 @@ instance FromJSON a => FromJSON (WPtype a) where
 
 instance FromJSON a => FromJSON (SymmetryGroup a) where
   parseJSON (Object v) = do
-    (name :: Text) <- v .: "Name"
+    (name :: Text) <- v .: "name"
     case toLower name of
       "p1"   -> P1  <$> v .: "xi" <*> v .: "eta"
       "p2"   -> P2  <$> v .: "xi" <*> v .: "eta"

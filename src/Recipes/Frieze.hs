@@ -30,9 +30,9 @@ module Recipes.Frieze
   , nm
   ) where
 
-import           Types
-import           Core
 import           Complextra
+import           Core
+import           Types
 
 import           Data.Complex
 import           Data.List    (nub)

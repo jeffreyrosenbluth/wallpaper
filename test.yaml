@@ -9,7 +9,7 @@
 #   Group:
 #     Name: p4
 # or, just directly:
-# Group: p4
+#   Group: p4
 Group: p4m
 Coefficients:
 - A(n,m): [0.75, 0.25]

@@ -1,6 +1,6 @@
 module Complextra where
 
-import Data.Complex
+import           Data.Complex
 
 scaleZ :: RealFloat a => a -> Complex a -> Complex a
 scaleZ k z = (k :+ 0) * z

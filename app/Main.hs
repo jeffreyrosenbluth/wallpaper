@@ -2,23 +2,26 @@
 
 module Main where
 
-import           Core
-import           Types
 import           Juicy
 import           Recipe
+import           Recipes.Wallpaper
+import           Recipes.Frieze
+import           Types
 
+import           Codec.Picture.Types
 import           Data.Complex
-import           Data.Yaml          (decodeFileEither, ParseException)
-import           Codec.Picture
+import           Data.Yaml          (ParseException, decodeFileEither)
 import           System.Environment
 
 main :: IO ()
 main = do
+  -- let wc = wheelColoring (Options 750 750 150 0.5) (p2mg coefs)
+  -- writeImage "wheel_out.png" (promoteImage wc)
   [yamlFile] <- getArgs
   (wp :: Either ParseException (Wallpaper Double)) <- decodeFileEither yamlFile
   case wp of
     Left e   -> error (show e)
-    Right w  -> wallpaper w 
+    Right w  -> wallpaper w
 
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)
