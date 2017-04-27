@@ -28,5 +28,6 @@ Options:
   height: 750
   repeat-length: 150
   scale-factor: 0.6
-Colorwheel-path: "rose.png"
-Output-path: "rose_out.png"
+Colorwheel-path: rose.png
+Pre-process: AntiSymmHorizontal
+Output-path: rose_out.png

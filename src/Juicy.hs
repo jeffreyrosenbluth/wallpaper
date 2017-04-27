@@ -51,17 +51,19 @@ symmetryPattern :: RealFloat a
                   -> ([Coef a] -> Recipe a)
                   -> [Coef a]
                   -> WPtype a
+                  -> PreProcess
                   -> FilePath
                   -> FilePath
                   -> IO ()
-symmetryPattern opts rf cs typ inFile outFile = do
+symmetryPattern opts rf cs typ pp inFile outFile = do
   dImg <- readImage inFile
   let img  = case dImg of
          Left e  -> error e
-         Right i -> case typ of
-           Plain -> symmetry opts (rf cs) (toImageRGBA8 i)
-           Morph c -> morph opts (rf cs) c (toImageRGBA8 i)
-           Blend g -> blend opts (rf cs) (recipe g cs) (toImageRGBA8 i)
+         Right i ->  let img' = preProcess pp . toImageRGBA8 $ i
+                     in case typ of
+           Plain -> symmetry opts (rf cs) img'
+           Morph c -> morph opts (rf cs) c img'
+           Blend g -> blend opts (rf cs) (recipe g cs) img'
   writeImage outFile img
 
 colorWheel :: RealFloat a => Complex a -> PixelRGB8
@@ -72,6 +74,16 @@ colorWheel (phase -> theta)
   | theta <=  2/5 * pi = PixelRGB8 209 219 189
   | theta <=        pi = PixelRGB8 252 255 245
   | otherwise          = PixelRGB8 255 255 255
+
+preProcess :: (Pixel p, Invertible p) => PreProcess -> Image p -> Image p
+preProcess process = case process of
+  FlipHorizontal     -> flipHorizontal
+  FlipVertical       -> flipVertical
+  FlipBoth           -> flipBoth
+  Invert             -> negative
+  AntiSymmHorizontal -> antiSymmHorizontal
+  AntiSymmVertical   -> antiSymmVertical
+  None               -> id
 
 wheelColoring :: RealFloat a => Options a -> Recipe a -> Image PixelRGB8
 wheelColoring opts rcp =

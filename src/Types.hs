@@ -23,6 +23,7 @@ module Types
   , Options(..)
   , defaultOpts
   , SymmetryGroup(..)
+  , PreProcess(..)
   , WPtype(..)
   , Wallpaper(..)
   , Recipe
@@ -34,6 +35,7 @@ module Types
 import           Codec.Picture
 import           Data.Yaml
 import           Data.Complex
+import           Data.Text     (Text, toLower)
 
 -- | A 'Recipe' is a mapping from the complex plange to the complex plane.
 type Recipe a = Complex a -> Complex a
@@ -146,8 +148,8 @@ instance FromJSON a => FromJSON (WPtype a) where
 
 instance FromJSON a => FromJSON (SymmetryGroup a) where
   parseJSON (Object v) = do
-    (name :: String) <- v .: "Name"
-    case name of
+    (name :: Text) <- v .: "Name"
+    case toLower name of
       "p1"   -> P1  <$> v .: "xi" <*> v .: "eta"
       "p2"   -> P2  <$> v .: "xi" <*> v .: "eta"
       "cm"   -> CM  <$> v .: "b"
@@ -157,38 +159,51 @@ instance FromJSON a => FromJSON (SymmetryGroup a) where
       "pmm"  -> PMM <$> v .: "L"
       "pmg"  -> PMG <$> v .: "L"
       "pgg"  -> PGG <$> v .: "L"
-      "p4"   -> pure P4
-      "p4m"  -> pure P4M
-      "p4G"  -> pure P4G
-      "p3"   -> pure P3
-      "p31m" -> pure P31M
-      "p3m1" -> pure P3M1
-      "p6"   -> pure P6
-      "p6m"  -> pure P6M
-      "p111" -> pure P111
-      "p211" -> pure P211
-      "p1m1" -> pure P1M1
-      "p11m" -> pure P11M
-      "p11g" -> pure P11G
-      "p2mm" -> pure P2MM
-      "p2mg" -> pure P2MG
-      _      -> fail "Tried to parse an invalid group name."
-  parseJSON (String "p4")   = pure P4
-  parseJSON (String "p4m")  = pure P4M
-  parseJSON (String "p4g")  = pure P4G
-  parseJSON (String "p3")   = pure P3
-  parseJSON (String "p31m") = pure P31M
-  parseJSON (String "p3m1") = pure P3M1
-  parseJSON (String "p6")   = pure P6
-  parseJSON (String "p6M")  = pure P6M
-  parseJSON (String "p111") = pure P111
-  parseJSON (String "p211") = pure P211
-  parseJSON (String "p1m1") = pure P1M1
-  parseJSON (String "p11m") = pure P11M
-  parseJSON (String "p11g") = pure P11G
-  parseJSON (String "p2mm") = pure P2MM
-  parseJSON (String "p2mg") = pure P2MG
+      s      -> parseGroup s
+  parseJSON (String s) = parseGroup s
   parseJSON _ = fail "Group must be an object or String"
+
+parseGroup :: Monad m => Text -> m (SymmetryGroup a)
+parseGroup s = case toLower s of
+  "p4"   -> pure P4
+  "p4m"  -> pure P4M
+  "p4G"  -> pure P4G
+  "p3"   -> pure P3
+  "p31m" -> pure P31M
+  "p3m1" -> pure P3M1
+  "p6"   -> pure P6
+  "p6m"  -> pure P6M
+  "p111" -> pure P111
+  "p211" -> pure P211
+  "p1m1" -> pure P1M1
+  "p11m" -> pure P11M
+  "p11g" -> pure P11G
+  "p2mm" -> pure P2MM
+  "p2mg" -> pure P2MG
+  _      -> fail "Tried to parse an invalid group name."
+
+data PreProcess
+  = FlipHorizontal
+  | FlipVertical
+  | FlipBoth
+  | Invert
+  | AntiSymmHorizontal
+  | AntiSymmVertical
+  | None
+  deriving (Show, Eq)
+
+instance FromJSON PreProcess where
+  parseJSON (String s) =
+    case toLower s of
+      "fliphorizontal"      -> pure FlipHorizontal
+      "flipvertical"        -> pure FlipVertical
+      "flipboth"            -> pure FlipBoth
+      "invert"              -> pure Invert
+      "anitsymmvertical"    -> pure AntiSymmVertical
+      "antisymmhorizontal" -> pure AntiSymmHorizontal
+      "none"                -> pure None
+      _                     -> fail "Invalid Pre-process type"
+  parseJSON _ = fail "Pre-process must be a String"
 
 data Wallpaper a = Wallpaper
   { wpGroup   :: SymmetryGroup a
@@ -196,6 +211,7 @@ data Wallpaper a = Wallpaper
   , wpType    :: WPtype a
   , wpOptions :: Options a
   , wpWheel   :: FilePath
+  , wpProcess :: PreProcess
   , wpPath    :: FilePath
   }
   deriving (Show, Eq, Functor)
@@ -208,6 +224,7 @@ instance FromJSON a => FromJSON (Wallpaper a) where
     <*> v .: "Type"
     <*> v .: "Options"
     <*> v .: "Colorwheel-path"
+    <*> v .:? "Pre-process" .!= None
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Wallpaper value."
 
