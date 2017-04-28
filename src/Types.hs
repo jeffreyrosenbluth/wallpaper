@@ -199,7 +199,7 @@ instance FromJSON PreProcess where
       "flipvertical"        -> pure FlipVertical
       "flipboth"            -> pure FlipBoth
       "invert"              -> pure Invert
-      "anitsymmvertical"    -> pure AntiSymmVertical
+      "antisymmvertical"    -> pure AntiSymmVertical
       "antisymmhorizontal" -> pure AntiSymmHorizontal
       "none"                -> pure None
       _                     -> fail "Invalid Pre-process type"
