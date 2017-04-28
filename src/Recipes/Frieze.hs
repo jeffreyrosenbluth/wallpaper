@@ -66,7 +66,7 @@ p11m cs = mkRecipe nm (nub $ cs ++ (negateCoefs . reverseCoefs <$> cs))
 p11g :: RealFloat a => [Coef a] -> Recipe a
 p11g cs = mkRecipe nm (nub $ cs ++ cs')
   where
-    cs' = negateCoefs . reverseCoefs . alternateCoefs (\n m -> (-1) ^ (n+m))<$> cs
+    cs' = negateCoefs . reverseCoefs . alternateCoefs (\n m -> (-1) ^^ (n+m))<$> cs
 
 -- | Horizontal and vertical reflections and translations.
 p2mm :: RealFloat a => [Coef a] -> Recipe a
@@ -80,6 +80,6 @@ p2mm cs = mkRecipe nm (nub $ cs ++ cs1 ++ cs2 ++ cs3)
 p2mg :: RealFloat a => [Coef a] -> Recipe a
 p2mg cs = mkRecipe nm (nub $ cs ++ cs1 ++ cs2 ++ cs3)
   where
-    cs1 = negateCoefs . reverseCoefs . alternateCoefs (\n m -> (-1) ^ (n+m)) <$> cs
+    cs1 = negateCoefs . reverseCoefs . alternateCoefs (\n m -> (-1) ^^ (n+m)) <$> cs
     cs2 = negateCoefs <$> cs
-    cs3 = reverseCoefs . alternateCoefs (\n m -> (-1) ^ (n+m)) <$> cs
+    cs3 = reverseCoefs . alternateCoefs (\n m -> (-1) ^^ (n+m)) <$> cs

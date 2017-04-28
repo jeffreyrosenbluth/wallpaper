@@ -11,7 +11,7 @@
 # or, just directly:
 #   Group: p4
 Group:
-  name: p4g
+  name: p2mg
 Coefficients:
 - A(n,m): [0.75, 0.25]
   n: 1
@@ -25,10 +25,10 @@ Coefficients:
 Type:
   style: plain
 Options:
-  width: 750
-  height: 750
-  repeat-length: 150
-  scale-factor: 0.2
-Colorwheel-path: examples/colorwheel.png
+  width: 600
+  height: 200
+  repeat-length: 125
+  scale-factor: 0.4
+Colorwheel-path: rose.png
 Pre-process: none
 Output-path: result.png
