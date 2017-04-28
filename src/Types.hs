@@ -130,6 +130,7 @@ data SymmetryGroup a
   | P2MG
   deriving (Show, Eq, Functor)
 
+-- | The type of wallpaper to produce.
 data WPtype a
   = Plain
   | Morph a
@@ -182,6 +183,7 @@ parseGroup s = case toLower s of
   "p2mg" -> pure P2MG
   _      -> fail "Tried to parse an invalid group name."
 
+-- | What to do the color wheel before creating the Wallpaper.
 data PreProcess
   = FlipHorizontal
   | FlipVertical
@@ -205,6 +207,7 @@ instance FromJSON PreProcess where
       _                     -> fail "Invalid Pre-process type"
   parseJSON _ = fail "Pre-process must be a String"
 
+-- | Settings for creating a wallpaper.
 data Wallpaper a = Wallpaper
   { wpGroup   :: SymmetryGroup a
   , wpCoefs   :: [Coef a]
