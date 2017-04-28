@@ -121,5 +121,5 @@ reverseCoefs (Coef n m a) = Coef m n a
 --   to change the sign of a coefficient based on its indices.
 --   Does not commute with negate or reverse, usually you want to apply
 --   'alternateCoefs' first.
-alternateCoefs :: RealFloat a => (Int -> Int -> Int) -> Coef a -> Coef a
-alternateCoefs alt (Coef n m a) = Coef n m (fromIntegral (alt n m) .*^ a)
+alternateCoefs :: RealFloat a => (Int -> Int -> a) -> Coef a -> Coef a
+alternateCoefs alt (Coef n m a) = Coef n m (alt n m .*^ a)

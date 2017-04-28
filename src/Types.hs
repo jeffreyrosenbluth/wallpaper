@@ -168,7 +168,7 @@ parseGroup :: Monad m => Text -> m (SymmetryGroup a)
 parseGroup s = case toLower s of
   "p4"   -> pure P4
   "p4m"  -> pure P4M
-  "p4G"  -> pure P4G
+  "p4g"  -> pure P4G
   "p3"   -> pure P3
   "p31m" -> pure P31M
   "p3m1" -> pure P3M1
