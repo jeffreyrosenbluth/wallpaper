@@ -1,0 +1,31 @@
+# The wallpaper or frieze group in short IUC notation.
+# If the group lattice takes parameters then they follow tagged
+# by there names, for example:
+#   Group:
+#     Name: p1
+#     xi: 1.5
+#     eta: 2.1
+# If the group lattice takes no parameters you can use either
+#   Group:
+#     Name: p4
+# or, just directly:
+#   Group: p4
+Group:
+  name: p211
+Coefficients:
+- A(n,m): [0.075, 0.025]
+  n: 1
+  m: 0
+- A(n,m): [0.01, 0.01]
+  n: 1
+  m: -2
+Type:
+  style: plain
+Options:
+  width: 600
+  height: 200
+  repeat-length: 50
+  scale-factor: 0.5
+Colorwheel-path: rose.png
+Pre-process: none
+Output-path: result.png

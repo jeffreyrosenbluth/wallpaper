@@ -1,5 +1,5 @@
 Group:
-  name: p111
+  name: p11m
 Coefficients:
 - A(n,m): [0.075, 0.025]
   n: 1

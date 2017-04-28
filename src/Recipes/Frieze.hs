@@ -12,6 +12,10 @@
 -- and
 -- "Creating Symmetry" by Frank A. Farris, 2015 Princeton University Press,
 --  Chapter 8
+--
+-- The color wheel used for all of the images:
+--
+-- <<examples/rose_small.png>>
 ---------------------------------------------------------------------------------
 
 module Recipes.Frieze
@@ -47,28 +51,40 @@ nm n m z = exp (fromIntegral n .*^ (im * z))
 --  Frieze Recipes ---------------------------------------------------------------
 
 -- | Translations only.
+--
+-- <<examples/p111.png>>
 p111 :: RealFloat a => [Coef a] -> Recipe a
 p111  = mkRecipe nm
 
 -- | 180 degree rotations and translations.
+--
+-- <<examples/p211.png>>
 p211 :: RealFloat a => [Coef a] -> Recipe a
 p211 cs = mkRecipe nm (nub $ cs ++ (negateCoefs <$> cs))
 
 -- | Vertical reflection and translations.
+--
+-- <<examples/p1m1.png>>
 p1m1 :: RealFloat a => [Coef a] -> Recipe a
 p1m1 cs = mkRecipe nm (nub $ cs ++ (reverseCoefs <$> cs))
 
 -- | Horizontal reflection and translations.
+--
+-- <<examples/p11m.png>>
 p11m :: RealFloat a => [Coef a] -> Recipe a
 p11m cs = mkRecipe nm (nub $ cs ++ (negateCoefs . reverseCoefs <$> cs))
 
 -- | Glide reflection and translations.
+--
+-- <<examples/p11g.png>>
 p11g :: RealFloat a => [Coef a] -> Recipe a
 p11g cs = mkRecipe nm (nub $ cs ++ cs')
   where
     cs' = negateCoefs . reverseCoefs . alternateCoefs (\n m -> (-1) ^^ (n+m))<$> cs
 
 -- | Horizontal and vertical reflections and translations.
+--
+-- <<examples/p2mm.png>>
 p2mm :: RealFloat a => [Coef a] -> Recipe a
 p2mm cs = mkRecipe nm (nub $ cs ++ cs1 ++ cs2 ++ cs3)
   where
@@ -77,6 +93,8 @@ p2mm cs = mkRecipe nm (nub $ cs ++ cs1 ++ cs2 ++ cs3)
     cs3 = negateCoefs <$> cs2
 
 -- | Horizontal glide reflection and 180 rotation.
+--
+-- <<examples/p2mg.png>>
 p2mg :: RealFloat a => [Coef a] -> Recipe a
 p2mg cs = mkRecipe nm (nub $ cs ++ cs1 ++ cs2 ++ cs3)
   where
