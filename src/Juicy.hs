@@ -52,14 +52,14 @@ import           System.Random
 
 -- | Crate a wallpaper and write it to an output file.
 symmetryPattern :: RealFloat a
-                  => Options a
-                  -> ([Coef a] -> Recipe a)
-                  -> [Coef a]
-                  -> WPtype a
-                  -> PreProcess
-                  -> FilePath
-                  -> FilePath
-                  -> IO ()
+                => Options a
+                -> ([Coef a] -> Recipe a)
+                -> [Coef a]
+                -> WPtype a
+                -> PreProcess
+                -> FilePath
+                -> FilePath
+                -> IO ()
 symmetryPattern opts rf cs typ pp inFile outFile = do
   dImg <- readImage inFile
   let img  = case dImg of
