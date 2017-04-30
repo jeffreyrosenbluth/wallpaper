@@ -8,6 +8,8 @@
 -- Maintainer  :  jeffrey.rosenbluth@gmail.com
 --
 -- Tools for creating symmtery images using the domain coloring algortihm.
+--
+-- <<examples/Y.png>>
 ---------------------------------------------------------------------------------
 
 module Core

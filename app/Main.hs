@@ -3,7 +3,7 @@
 module Main where
 
 import           Juicy
-import           Recipe
+import           Recipes.Common
 import           Recipes.Wallpaper
 import           Recipes.Frieze
 import           Types

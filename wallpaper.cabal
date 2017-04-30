@@ -1,7 +1,7 @@
 name:                wallpaper
 version:             0.1.0.0
 -- synopsis:
--- description:
+description:         <<examples/beach_morph.png>>
 homepage:            https://github.com/githubuser/wallpaper#readme
 license:             BSD3
 license-file:        LICENSE
@@ -20,7 +20,7 @@ library
   exposed-modules:     Core
                      , Complextra
                      , Juicy
-                     , Recipe
+                     , Recipes.Common
                      , Recipes.Wallpaper
                      , Recipes.Frieze
                      , Recipes.Rosette

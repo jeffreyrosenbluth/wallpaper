@@ -8,6 +8,8 @@
 -- Maintainer  :  jeffrey.rosenbluth@gmail.com
 --
 -- Tools for creating symmtery images specific to JuicyPixels.
+--
+-- <<examples/squares.png>>
 ---------------------------------------------------------------------------------
 
 module Juicy
@@ -34,7 +36,7 @@ module Juicy
   ) where
 
 import           Core
-import           Recipe
+import           Recipes.Common
 import           Types
 
 import           Codec.Picture

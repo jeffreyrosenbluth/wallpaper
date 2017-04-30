@@ -1,4 +1,4 @@
-module Recipe where
+module Recipes.Common where
 
 import           Recipes.Frieze
 import           Recipes.Wallpaper
