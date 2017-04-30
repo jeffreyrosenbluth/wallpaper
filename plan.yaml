@@ -11,21 +11,25 @@
 # or, just directly:
 #   Group: p4
 Group:
-  name: p211
+  name: p4g
+  b: 2
 Coefficients:
-- A(n,m): [0.075, 0.025]
+- A(n,m): [1, 0]
   n: 1
-  m: 0
-- A(n,m): [0.01, 0.01]
-  n: 1
-  m: -2
+  m: 1
+- A(n,m): [0.5, 0]
+  n: 2
+  m: 2
+- A(n,m): [0, 0.5]
+  n: 2
+  m: 1
 Type:
   style: plain
 Options:
-  width: 600
-  height: 200
-  repeat-length: 50
+  width: 750
+  height: 750
+  repeat-length: 150
   scale-factor: 0.5
 Colorwheel-path: rose.png
-Pre-process: none
+Pre-process: antiSymmHorizontal
 Output-path: result.png

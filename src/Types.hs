@@ -7,7 +7,7 @@
 
 {-# OPTIONS_GHC -fno-warn-orphans  #-}
 
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- |
 -- Module      :  Types
 -- Copyright   :  (c) 2017 Jeffrey Rosenbluth
@@ -16,7 +16,7 @@
 --
 -- Types and classes for creating symmtery images using the domain coloring
 -- algortihm.
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 module Types
   ( Coef(..)
@@ -202,7 +202,7 @@ instance FromJSON PreProcess where
       "flipboth"            -> pure FlipBoth
       "invert"              -> pure Invert
       "antisymmvertical"    -> pure AntiSymmVertical
-      "antisymmhorizontal" -> pure AntiSymmHorizontal
+      "antisymmhorizontal"  -> pure AntiSymmHorizontal
       "none"                -> pure None
       _                     -> fail "Invalid Pre-process type"
   parseJSON _ = fail "Pre-process must be a String"
@@ -231,7 +231,7 @@ instance FromJSON a => FromJSON (Wallpaper a) where
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Wallpaper value."
 
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- | Pixels that can be set to black and white.
 class BlackWhite a where
   black :: a
@@ -261,7 +261,7 @@ instance BlackWhite PixelCMYK8 where
   black = PixelCMYK8  0 0 0 255
   white = PixelCMYK8 0 0 0 0
 
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- | Invert the color of a pixel.
 class Invertible a where
   invert :: a -> a
