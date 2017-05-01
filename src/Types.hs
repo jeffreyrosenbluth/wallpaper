@@ -26,6 +26,7 @@ module Types
   , PreProcess(..)
   , WPtype(..)
   , Wallpaper(..)
+  , Rosette(..)
   , Recipe
   , Img(..)
   , Invertible(..)
@@ -216,8 +217,7 @@ data Wallpaper a = Wallpaper
   , wpWheel   :: FilePath
   , wpProcess :: PreProcess
   , wpPath    :: FilePath
-  }
-  deriving (Show, Eq, Functor)
+  } deriving (Show, Eq, Functor)
 
 instance FromJSON a => FromJSON (Wallpaper a) where
   parseJSON (Object v)
@@ -230,6 +230,27 @@ instance FromJSON a => FromJSON (Wallpaper a) where
     <*> v .:? "Pre-process" .!= None
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Wallpaper value."
+
+data Rosette a = Rosette
+  { rsMirror :: Bool
+  , rsCoefs  :: [Coef a]
+  , rsOptions :: Options a
+  , rsWheel   :: FilePath
+  , rsProcess :: PreProcess
+  , rsPath    :: FilePath
+  } deriving (Show, Eq, Functor)
+
+instance FromJSON a => FromJSON (Rosette a) where
+  parseJSON (Object v)
+    =   Rosette
+    <$> v .: "Mirror"
+    <*> v .: "Coefficients"
+    <*> v .: "Options"
+    <*> v .: "Colorwheel-path"
+    <*> v .:? "Pre-process" .!= None
+    <*> v .: "Output-path"
+  parseJSON _ = fail "Expected Object for Rosette value."
+
 
 --------------------------------------------------------------------------------
 -- | Pixels that can be set to black and white.
