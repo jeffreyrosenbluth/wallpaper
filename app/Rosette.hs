@@ -3,7 +3,6 @@
 module Main where
 
 import           Juicy
-import           Recipes.Common
 import           Types
 
 import           Data.Complex
@@ -13,10 +12,10 @@ import           System.Environment
 main :: IO ()
 main = do
   [yamlFile] <- getArgs
-  (wp :: Either ParseException (Wallpaper Double)) <- decodeFileEither yamlFile
-  case wp of
+  (rs :: Either ParseException (Rosette Double)) <- decodeFileEither yamlFile
+  case rs of
     Left e   -> error (show e)
-    Right w  -> putStrLn "Rosette"
+    Right r  -> rosette r
 
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)
@@ -24,11 +23,11 @@ coefs = [ Coef 1 0 (0.75:+0.25)
         , Coef 1 (-1) (0.6:+0.1)
         ]
 
--- rosette :: RealFloat a => Wallpaper a -> IO ()
--- rosette wp = symmetryPattern (wpOptions wp)
---                                (recipe (wpGroup wp))
---                                (wpCoefs wp)
---                                (wpType wp)
---                                (wpProcess wp)
---                                (wpWheel wp)
---                                (wpPath wp)
+rosette :: RealFloat a => Rosette a -> IO ()
+rosette rs = rosettePattern (rsOptions rs)
+                            (rsCoefs rs)
+                            (rsFoldSym rs)
+                            (rsMirror rs)
+                            (rsProcess rs)
+                            (rsWheel rs)
+                            (rsPath rs)

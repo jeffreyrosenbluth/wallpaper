@@ -1,0 +1,20 @@
+P-fold: 5
+Mirror: true
+Coefficients:
+- A(n,m): [1, 0]
+  n: 1
+  m: 1
+- A(n,m): [0.5, 0]
+  n: 2
+  m: 2
+- A(n,m): [0, 0.5]
+  n: 2
+  m: 1
+Options:
+  width: 750
+  height: 750
+  repeat-length: 150
+  scale-factor: 0.1
+Colorwheel-path: rose.png
+Pre-process: antiSymmHorizontal
+Output-path: result.png

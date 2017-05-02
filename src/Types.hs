@@ -232,8 +232,9 @@ instance FromJSON a => FromJSON (Wallpaper a) where
   parseJSON _ = fail "Expected Object for Wallpaper value."
 
 data Rosette a = Rosette
-  { rsMirror :: Bool
-  , rsCoefs  :: [Coef a]
+  { rsFoldSym :: Int
+  , rsMirror  :: Bool
+  , rsCoefs   :: [Coef a]
   , rsOptions :: Options a
   , rsWheel   :: FilePath
   , rsProcess :: PreProcess
@@ -243,7 +244,8 @@ data Rosette a = Rosette
 instance FromJSON a => FromJSON (Rosette a) where
   parseJSON (Object v)
     =   Rosette
-    <$> v .: "Mirror"
+    <$> v .: "P-fold"
+    <*> v .: "Mirror"
     <*> v .: "Coefficients"
     <*> v .: "Options"
     <*> v .: "Colorwheel-path"

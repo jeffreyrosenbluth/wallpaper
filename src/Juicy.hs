@@ -16,6 +16,7 @@ module Juicy
   (
    -- * Wallpaper Generation
     symmetryPattern
+  , rosettePattern
   , colorWheel
   , wheelColoring
 
@@ -37,6 +38,7 @@ module Juicy
 
 import           Core
 import           Recipes.Common
+import           Recipes.Rosette
 import           Types
 
 import           Codec.Picture
@@ -69,6 +71,25 @@ symmetryPattern opts rf cs typ pp inFile outFile = do
            Plain   -> symmetry opts (rf cs) img'
            Morph c -> morph opts (rf cs) c img'
            Blend g -> blend opts (rf cs) (recipe g cs) img'
+  writeImage outFile img
+
+rosettePattern :: RealFloat a
+                => Options a
+                -> [Coef a]
+                -> Int
+                -> Bool
+                -> PreProcess
+                -> FilePath
+                -> FilePath
+                -> IO ()
+rosettePattern opts cs pfold reflect pp inFile outFile = do
+  dImg <- readImage inFile
+  let img  = case dImg of
+         Left e  -> error e
+         Right i -> let img' = preProcess pp . toImageRGBA8 $ i
+                    in  if reflect
+                          then symmetry opts (rosettePM pfold cs) img'
+                          else symmetry opts (rosetteP pfold cs) img'
   writeImage outFile img
 
 int2rgb :: Int -> PixelRGB8
