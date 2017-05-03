@@ -82,12 +82,12 @@ rosettePattern :: RealFloat a
                 -> FilePath
                 -> FilePath
                 -> IO ()
-rosettePattern opts cs pfold reflect pp inFile outFile = do
+rosettePattern opts cs pfold mirror pp inFile outFile = do
   dImg <- readImage inFile
   let img  = case dImg of
          Left e  -> error e
          Right i -> let img' = preProcess pp . toImageRGBA8 $ i
-                    in  if reflect
+                    in  if mirror
                           then symmetry opts (rosettePM pfold cs) img'
                           else symmetry opts (rosetteP pfold cs) img'
   writeImage outFile img

@@ -38,7 +38,7 @@ entire n m z = z ^^ n * conjugate z ^^ m
 rosetteP :: RealFloat a => Int -> [Coef a] -> Recipe a
 rosetteP p cs = mkRecipe entire cs'
   where
-    cs' = filter (\(Coef n m _) -> (n-m `mod` p) == 0) cs
+    cs' = filter (\(Coef n m _) -> ((n-m) `mod` p) == 0) cs
 
 -- | Rosette recipe with p-fold and horizontal mirror symmetry.
 --   /Note rosette recipe constuctors differ from those of wallpaper/
@@ -47,4 +47,4 @@ rosetteP p cs = mkRecipe entire cs'
 rosettePM :: RealFloat a => Int -> [Coef a] -> Recipe a
 rosettePM p cs = mkRecipe entire (nub $ cs' ++ (reverseCoefs <$> cs'))
   where
-    cs' = filter (\(Coef n m _) -> (n-m `mod` p) == 0) cs
+    cs' = filter (\(Coef n m _) -> ((n-m) `mod` p) == 0) cs
