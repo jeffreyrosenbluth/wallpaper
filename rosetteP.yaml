@@ -1,17 +1,20 @@
 P-fold: 5
 Mirror: False
 Coefficients:
-- A(n,m): [0.5, 0]
+- A(n,m): [0.4, 0.2]
   n: 5
   m: 0
-- A(n,m): [0.3, 0]
+- A(n,m): [0.5, 0.5]
   n: 4
   m: -6
+- A(n,m): [0, 5]
+  n: 1
+  m: 6
 Options:
   width: 360
   height: 360
   repeat-length: 200
   scale-factor: 0.25
 Colorwheel-path: rose.png
-Pre-process: none
+Pre-process: AntiSymmVertical
 Output-path: result.png
