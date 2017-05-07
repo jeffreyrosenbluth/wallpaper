@@ -1,4 +1,4 @@
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 ---------------------------------------------------------------------------------
 -- |
@@ -17,8 +17,12 @@ module Juicy
    -- * Wallpaper Generation
     symmetryPattern
   , rosettePattern
+  , portrait
+  , symmetryPortrait
+
+  -- * Color Wheels
   , colorWheel
-  , wheelColoring
+  , colorWheelP
 
   -- * Image Processing
   , invertImage
@@ -46,11 +50,26 @@ import           Codec.Picture.Types
 import qualified Data.ByteString.Lazy as L (writeFile)
 import           Data.Complex
 import           Data.Word            (Word8)
-import           Numeric              (readHex, showHex)
 import           System.FilePath      (takeExtension)
-import           System.Random
 
 -- Wallpaper Generation --------------------------------------------------------
+
+portrait :: RealFloat a
+         => Options a
+         -> Recipe a
+         -> FilePath
+         -> IO ()
+portrait opts f outFile = writeImage outFile $ symmFromFn opts f colorWheelP
+
+
+symmetryPortrait :: RealFloat a
+                 => Options a
+                 -> ([Coef a] -> Recipe a)
+                 -> [Coef a]
+                 -> FilePath
+                 -> IO ()
+symmetryPortrait opts rf cs outFile =
+  writeImage outFile $ symmFromFn opts (rf cs) colorWheel
 
 -- | Crate a wallpaper and write it to an output file.
 symmetryPattern :: RealFloat a
@@ -92,28 +111,40 @@ rosettePattern opts cs pfold mirror pp inFile outFile = do
                           else symmetry opts (rosetteP pfold cs) img'
   writeImage outFile img
 
-int2rgb :: Int -> PixelRGB8
-int2rgb n = PixelRGB8 r g b
+-- | Convert a hue in radians (-pi, pi] to RGB
+hue :: forall a. RealFloat a => a -> PixelRGBA8
+hue radians = case hi of
+  0 -> PixelRGBA8 255 t 0 255
+  1 -> PixelRGBA8 q 255 0 255
+  2 -> PixelRGBA8 0 255 t 255
+  3 -> PixelRGBA8 0 q 255 255
+  4 -> PixelRGBA8 t 0 255 255
+  5 -> PixelRGBA8 255 0 q 255
+  _ -> error "The sky is falling, mod 6 can only be [0,5]"
   where
-    hex = showHex n ""
-    (hr, xs) = splitAt 2 hex
-    (hg, hb) = splitAt 2 xs
-    [(r, _)] = readHex hr
-    [(g, _)] = readHex hg
-    [(b, _)] = readHex hb
+    rad = if radians <= 0 then radians + 2 * pi else radians
+    degrees = 360 * rad / (2 * pi)
+    hi :: Int
+    hi = floor (degrees/60) `mod` 6
+    t =  round $ 255 * mod1 (degrees/60)
+    q = 255 - t
+    mod1 x
+      | f < 0 = f + 1
+      | otherwise = f
+      where
+        (_, f) :: (Int, a) = properFraction x
 
 -- | A Color wheel on the entire complex plane.
-colorWheel :: RealFloat a => Complex a -> PixelRGB8
-colorWheel (phase -> theta)
-  | theta <= -2/3 * pi = int2rgb $ rs !! 0
-  | theta <= -1/3 * pi = int2rgb $ rs !! 1
-  | theta <= 0    * pi = int2rgb $ rs !! 2
-  | theta <=  1/3 * pi = int2rgb $ rs !! 3
-  | theta <=  2/3 * pi = int2rgb $ rs !! 4
-  | theta <=        pi = int2rgb $ rs !! 5
-  | otherwise          = int2rgb $ rs !! 6
+--   The color is solely based on the phase of the complex number.
+colorWheel :: RealFloat a => Complex a -> PixelRGBA8
+colorWheel z = hue (phase z)
+
+colorWheelP :: RealFloat a => Complex a -> PixelRGBA8
+colorWheelP z = if (==) (fromIntegral . round $ degrees) degrees then black else hue rad
   where
-    rs = floor . (* 16777215) <$> randomRs (0.1 :: Double, 0.9) (mkStdGen 0)
+    radians = phase z
+    rad = if radians <= 0 then radians + 2 * pi else radians
+    degrees =  360 * rad / (2 * pi)
 
 preProcess :: (Pixel p, Invertible p) => PreProcess -> Image p -> Image p
 preProcess process = case process of
@@ -124,14 +155,6 @@ preProcess process = case process of
   AntiSymmHorizontal -> antiSymmHorizontal
   AntiSymmVertical   -> antiSymmVertical
   None               -> id
-
-wheelColoring :: RealFloat a => Options a -> Recipe a -> Image PixelRGB8
-wheelColoring opts rcp =
-  generateImage (\i j -> colorWheel . get $ (fromIntegral i :+ fromIntegral j))
-                (width opts)
-                (height opts)
-  where
-    get = focusIn (width opts) (height opts) (repLength opts) rcp
 
 -- Image Processing -------------------------------------------------------------
 

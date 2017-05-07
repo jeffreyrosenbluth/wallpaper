@@ -16,6 +16,7 @@ module Core
   (
     -- * Domain Coloring
     symmetry
+  , symmFromFn
   , blend
   , morph
   , mkRecipe
@@ -61,6 +62,17 @@ focusIn w h l rcp (x :+ y) =
   rcp ((x - fromIntegral w / 2) / l' :+ (fromIntegral h / 2 - y) / l')
     where
       l' = fromIntegral l
+
+symmFromFn :: (RealFloat a, Img i)
+                  => Options a
+                  -> Recipe a
+                  -> (Complex a -> Pxl i)
+                  -> i
+symmFromFn opts rcp f = generateImg color (width opts) (height opts)
+  where
+    color i j = f . rcp' $ (fromIntegral i :+ fromIntegral j)
+    rcp' = focusIn (width opts) (height opts) (repLength opts) rcp
+
 
 -- | Make a symmetry image from a set of 'Options', a 'Recipe' and a color wheel.
 symmetry :: (RealFloat a, Img i, BlackWhite (Pxl i))

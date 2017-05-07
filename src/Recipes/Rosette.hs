@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------
 -- |
--- Module      :  Recipes.Wallpaper
+-- Module      :  Recipes.Rosette
 -- Copyright   :  (c) 2017 Jeffrey Rosenbluth
 -- License     :  BSD-style (see LICENSE)
 -- Maintainer  :  jeffrey.rosenbluth@gmail.com

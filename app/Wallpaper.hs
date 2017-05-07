@@ -4,6 +4,7 @@ module Main where
 
 import           Juicy
 import           Recipes.Common
+import           Recipes.Functions
 import           Types
 
 import           Data.Complex
@@ -16,7 +17,7 @@ main = do
   (wp :: Either ParseException (Wallpaper Double)) <- decodeFileEither yamlFile
   case wp of
     Left e   -> error (show e)
-    Right w  -> wallpaper w
+    Right w  -> idPortrait w -- wallpaper w
 
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)
@@ -32,3 +33,12 @@ wallpaper wp = symmetryPattern (wpOptions wp)
                                (wpProcess wp)
                                (wpWheel wp)
                                (wpPath wp)
+
+phasePortrait :: RealFloat a => Wallpaper a -> IO ()
+phasePortrait wp = symmetryPortrait (wpOptions wp)
+                                    (recipe (wpGroup wp))
+                                    (wpCoefs wp)
+                                    (wpPath wp)
+
+idPortrait :: RealFloat a => Wallpaper a -> IO ()
+idPortrait wp = portrait (wpOptions wp) identity (wpPath wp)

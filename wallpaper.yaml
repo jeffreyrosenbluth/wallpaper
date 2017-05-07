@@ -1,5 +1,5 @@
 Group:
-  name: p111
+  name: p3m1
 Coefficients:
 - A(n,m): [0.075, 0.025]
   n: 1
@@ -10,10 +10,10 @@ Coefficients:
 Type:
   style: plain
 Options:
-  width: 600
-  height: 200
-  repeat-length: 50
-  scale-factor: 0.5
+  width: 500
+  height: 500
+  repeat-length: 150
+  scale-factor: 1
 Colorwheel-path: rose.png
 Pre-process: none
 Output-path: result.png
