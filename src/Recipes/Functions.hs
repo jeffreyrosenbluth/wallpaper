@@ -17,9 +17,13 @@ module Recipes.Functions
   (
   -- * Functions
     identity
+  , standard
   ) where
 
 import           Types
 
 identity :: RealFloat a => Recipe a
 identity = id
+
+standard :: RealFloat a => Recipe a
+standard z = (z - 1) / (z**2 + z + 1)

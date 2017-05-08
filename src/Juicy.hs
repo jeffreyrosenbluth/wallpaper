@@ -22,7 +22,6 @@ module Juicy
 
   -- * Color Wheels
   , colorWheel
-  , colorWheelP
 
   -- * Image Processing
   , invertImage
@@ -59,7 +58,7 @@ portrait :: RealFloat a
          -> Recipe a
          -> FilePath
          -> IO ()
-portrait opts f outFile = writeImage outFile $ symmFromFn opts f colorWheelP
+portrait opts f outFile = writeImage outFile $ symmFromFn opts f colorWheel
 
 
 symmetryPortrait :: RealFloat a
@@ -138,13 +137,6 @@ hue radians = case hi of
 --   The color is solely based on the phase of the complex number.
 colorWheel :: RealFloat a => Complex a -> PixelRGBA8
 colorWheel z = hue (phase z)
-
-colorWheelP :: RealFloat a => Complex a -> PixelRGBA8
-colorWheelP z = if (==) (fromIntegral . round $ degrees) degrees then black else hue rad
-  where
-    radians = phase z
-    rad = if radians <= 0 then radians + 2 * pi else radians
-    degrees =  360 * rad / (2 * pi)
 
 preProcess :: (Pixel p, Invertible p) => PreProcess -> Image p -> Image p
 preProcess process = case process of

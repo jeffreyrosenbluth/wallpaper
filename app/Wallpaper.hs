@@ -17,7 +17,7 @@ main = do
   (wp :: Either ParseException (Wallpaper Double)) <- decodeFileEither yamlFile
   case wp of
     Left e   -> error (show e)
-    Right w  -> idPortrait w -- wallpaper w
+    Right w  -> standardPortrait w -- wallpaper w
 
 coefs :: [Coef Double]
 coefs = [ Coef 1 0 (0.75:+0.25)
@@ -42,3 +42,6 @@ phasePortrait wp = symmetryPortrait (wpOptions wp)
 
 idPortrait :: RealFloat a => Wallpaper a -> IO ()
 idPortrait wp = portrait (wpOptions wp) identity (wpPath wp)
+
+standardPortrait :: RealFloat a => Wallpaper a -> IO ()
+standardPortrait wp = portrait (wpOptions wp) standard (wpPath wp)
