@@ -34,6 +34,7 @@ module Core
 import           Complextra
 import           Types
 
+import           Codec.Picture
 import           Data.Complex
 
 -- Domain Coloring -------------------------------------------------------------
@@ -41,11 +42,11 @@ import           Data.Complex
 -- | Creates a function to get the color of pixel (i, j) from a color wheel
 --   given 'Options', a 'Recipe' and the color wheel. You shouldn't need to
 --   use this function directly.
-getColor :: (RealFloat a, Img i, BlackWhite (Pxl i))
-          => Options a -> Recipe a -> i -> Int -> Int -> Pxl i
+getColor :: (RealFloat a, Pixel p, BlackWhite p)
+          => Options a -> Recipe a -> Image p -> Int -> Int -> p
 getColor opts rcp wheel i j = clamp (round x + w1 `div` 2) (round y + h1 `div` 2)
   where
-    (w1, h1) = (imgWidth wheel, imgHeight wheel)
+    (w1, h1) = (imageWidth wheel, imageHeight wheel)
     (x :+ y) = (scale opts * 0.5 * fromIntegral (min w1 h1))
             .*^ focusIn (width opts)
                         (height opts)
@@ -54,7 +55,7 @@ getColor opts rcp wheel i j = clamp (round x + w1 `div` 2) (round y + h1 `div` 2
                         (fromIntegral i :+ fromIntegral j)
     clamp m n
       | m < 0 || n < 0 || m >= w1 || n >= h1 = black
-      | otherwise = getPxl wheel m n
+      | otherwise = pixelAt wheel m n
 
 -- | Center the coordinates at the origin and scale them to the range (-1, 1)
 focusIn :: RealFloat a => Int -> Int -> Int -> Recipe a -> Recipe a
@@ -63,28 +64,28 @@ focusIn w h l rcp (x :+ y) =
     where
       l' = fromIntegral l
 
-symmFromFn :: (RealFloat a, Img i)
+symmFromFn :: (RealFloat a, Pixel p)
                   => Options a
                   -> Recipe a
-                  -> (Complex a -> Pxl i)
-                  -> i
-symmFromFn opts rcp f = generateImg color (width opts) (height opts)
+                  -> (Complex a -> p)
+                  -> Image p
+symmFromFn opts rcp f = generateImage color (width opts) (height opts)
   where
     color i j = f . rcp' $ (fromIntegral i :+ fromIntegral j)
     rcp' = focusIn (width opts) (height opts) (repLength opts) rcp
 
 
 -- | Make a symmetry image from a set of 'Options', a 'Recipe' and a color wheel.
-symmetry :: (RealFloat a, Img i, BlackWhite (Pxl i))
-          => Options a -> Recipe a -> i -> i
-symmetry opts rcp wheel = generateImg (getColor opts rcp wheel)
+symmetry :: (RealFloat a, Pixel p, BlackWhite p)
+          => Options a -> Recipe a -> Image p -> Image p
+symmetry opts rcp wheel = generateImage (getColor opts rcp wheel)
                                       (width opts)
                                       (height opts)
 
 -- | Make a symmetry image from two 'Recipe's by linearly interpolation.
 --   The interpolation is along the horizontal axis.
-blend :: (RealFloat a, Img i, BlackWhite (Pxl i))
-      => Options a -> Recipe a -> Recipe a -> i-> i
+blend :: (RealFloat a, Pixel p, BlackWhite p)
+      => Options a -> Recipe a -> Recipe a -> Image p-> Image p
 blend opts rcp1 rcp2 = symmetry opts rcp
   where
     rcp z@(x :+ _) = let a = (x + m) / (2 * m)
@@ -95,8 +96,8 @@ blend opts rcp1 rcp2 = symmetry opts rcp
 --   degree rotation. The cutoff represents what percentage of the
 --   image stays constant at the left and right sides. Like 'blend' the
 --   interpolation is in the horizontal direction.
-morph :: (RealFloat a, Img i, BlackWhite (Pxl i))
-      => Options a -> Recipe a -> a -> i -> i
+morph :: (RealFloat a, Pixel p, BlackWhite p)
+      => Options a -> Recipe a -> a -> Image p -> Image p
 morph opts rcp c = symmetry opts rcp'
   where
     rcp' z@(x :+ _) = exp (pi * phi c ((x+t/2)/t) .*^ im) * rcp z

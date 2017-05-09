@@ -28,7 +28,6 @@ module Types
   , Wallpaper(..)
   , Rosette(..)
   , Recipe
-  , Img(..)
   , Invertible(..)
   , BlackWhite(..)
   ) where
@@ -86,22 +85,6 @@ instance FromJSON a => FromJSON (Options a) where
 --   by 1/2.
 defaultOpts :: Options Double
 defaultOpts = Options 750 750 150 0.5
-
--- | Things that symmetry images and be output as.
-class Img a where
-  type Pxl a  :: *
-  getPxl      :: a -> Int -> Int-> Pxl a
-  generateImg :: (Int -> Int -> Pxl a) -> Int -> Int -> a
-  imgWidth    :: a -> Int
-  imgHeight   :: a -> Int
-
--- | 'Img' instance for a JuicyPixels 'Image'.
-instance Pixel p => Img (Image p) where
-  type Pxl (Image p) = p
-  getPxl      = pixelAt
-  generateImg = generateImage
-  imgWidth = imageWidth
-  imgHeight = imageHeight
 
 -- | The 17 Wallpaper groups and 7 Frieze groups.
 data SymmetryGroup a
