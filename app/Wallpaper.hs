@@ -3,7 +3,6 @@
 module Main where
 
 import           Juicy
-import           Recipes.Common
 import           Recipes.Functions
 import           Types
 
