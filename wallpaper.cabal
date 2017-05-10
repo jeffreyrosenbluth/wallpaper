@@ -19,7 +19,7 @@ library
   ghc-options:         -Wall -O2
   exposed-modules:     Core
                      , Complextra
-                     , Juicy
+                     , Portrait
                      , Recipes.Wallpaper
                      , Recipes.Frieze
                      , Recipes.Rosette

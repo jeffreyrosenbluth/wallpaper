@@ -2,7 +2,7 @@
 
 module Main where
 
-import           Juicy
+import           Portrait
 import           Types
 
 import           Data.Complex

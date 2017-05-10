@@ -2,7 +2,7 @@
 
 module Main where
 
-import           Juicy
+import           Portrait
 import           Recipes.Functions
 import           Types
 
