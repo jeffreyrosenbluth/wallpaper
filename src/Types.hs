@@ -18,7 +18,8 @@
 --------------------------------------------------------------------------------
 
 module Types
-  ( Coef(..)
+  ( ColorSource(..)
+  , Coef(..)
   , Options(..)
   , defaultOpts
   , SymmetryGroup(..)
@@ -26,6 +27,7 @@ module Types
   , WPtype(..)
   , Wallpaper(..)
   , Rosette(..)
+  , Function(..)
   , Recipe
   , Invertible(..)
   , BlackWhite(..)
@@ -38,6 +40,10 @@ import           Data.Yaml
 
 -- | A 'Recipe' is a mapping from the complex plange to the complex plane.
 type Recipe a = Complex a -> Complex a
+
+data ColorSource a p
+  = Picture (Image p)
+  | Function (Complex a -> p)
 
 -- | The coefficents used to build a symmetry recipe, C_nm. A coeffient
 --   is a doubley indexed complex number
@@ -113,23 +119,6 @@ data SymmetryGroup a
   | P2MG
   deriving (Show, Eq, Functor)
 
--- | The type of wallpaper to produce.
-data WPtype a
-  = Plain
-  | Morph a
-  | Blend (SymmetryGroup a)
-  deriving (Show, Eq, Functor)
-
-instance FromJSON a => FromJSON (WPtype a) where
-  parseJSON (Object v) = do
-    (typ :: String) <- v .: "style"
-    case typ of
-      "plain" -> pure Plain
-      "morph" -> Morph <$> v .: "cutoff"
-      "blend" -> Blend <$> v .: "group"
-      _       -> fail "Tried to parse an invalide wallpaper type."
-  parseJSON _ = fail "Expected a String for the wallpaper type."
-
 instance FromJSON a => FromJSON (SymmetryGroup a) where
   parseJSON (Object v) = do
     (name :: Text) <- v .: "name"
@@ -166,6 +155,23 @@ parseGroup s = case toLower s of
   "p2mg" -> pure P2MG
   _      -> fail "Tried to parse an invalid group name."
 
+-- | The type of wallpaper to produce.
+data WPtype a
+  = Plain
+  | Morph a
+  | Blend (SymmetryGroup a)
+  deriving (Show, Eq, Functor)
+
+instance FromJSON a => FromJSON (WPtype a) where
+  parseJSON (Object v) = do
+    (typ :: String) <- v .: "style"
+    case typ of
+      "plain" -> pure Plain
+      "morph" -> Morph <$> v .: "cutoff"
+      "blend" -> Blend <$> v .: "group"
+      _       -> fail "Tried to parse an invalide wallpaper type."
+  parseJSON _ = fail "Expected a String for the wallpaper type."
+
 -- | What to do the color wheel before creating the Wallpaper.
 data PreProcess
   = FlipHorizontal
@@ -190,6 +196,20 @@ instance FromJSON PreProcess where
       _                     -> fail "Invalid Pre-process type"
   parseJSON _ = fail "Pre-process must be a String"
 
+-- data ColorWheel
+--   = Path FilePath
+--   | Func
+--   deriving (Show, Eq)
+--
+-- instance FromJSON ColorWheel where
+--   parseJSON (Object v) = do
+--     (src :: String) <- v .: "source"
+--     case src of
+--       "standard" -> pure Func
+--       "file"     -> Path <$> v .: "path"
+--       _          -> fail "Tried to parse an invalid color source."
+--   parseJSON _  = fail "Expected a String for a color source type."
+
 -- | Settings for creating a wallpaper.
 data Wallpaper a = Wallpaper
   { wpGroup   :: SymmetryGroup a
@@ -206,7 +226,7 @@ instance FromJSON a => FromJSON (Wallpaper a) where
     =   Wallpaper
     <$> v .: "Group"
     <*> v .: "Coefficients"
-    <*> v .: "Type"
+    <*> v .:? "Type" .!= Plain
     <*> v .: "Options"
     <*> v .: "Colorwheel-path"
     <*> v .:? "Pre-process" .!= None
@@ -234,6 +254,13 @@ instance FromJSON a => FromJSON (Rosette a) where
     <*> v .:? "Pre-process" .!= None
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Rosette value."
+
+data Function a = Fn
+  { fnOptions :: Options a
+  , fnWeel    :: FilePath
+  , fnProcess :: PreProcess
+  , fnPath    :: FilePath
+  } deriving (Show, Eq, Functor)
 
 
 --------------------------------------------------------------------------------

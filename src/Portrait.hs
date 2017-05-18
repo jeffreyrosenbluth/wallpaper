@@ -17,7 +17,7 @@ module Portrait
    -- * Wallpaper Generation
     symmetryPattern
   , rosettePattern
-  , portrait
+  , phasePortrait
   , symmetryPortrait
   , recipe
 
@@ -53,14 +53,14 @@ import           Data.Complex
 import           Data.Word            (Word8)
 import           System.FilePath      (takeExtension)
 
--- Wallpaper Generation --------------------------------------------------------
-
-portrait :: RealFloat a
+-- Domain Coloring -------------------------------------------------------------
+phasePortrait :: RealFloat a
          => Options a
          -> Recipe a
          -> FilePath
          -> IO ()
-portrait opts f outFile = writeImage outFile $ symmFromFn opts f colorWheel
+phasePortrait opts f outFile
+  = writeImage outFile $ domainColoring opts f (Function colorWheel)
 
 
 symmetryPortrait :: RealFloat a
@@ -70,7 +70,7 @@ symmetryPortrait :: RealFloat a
                  -> FilePath
                  -> IO ()
 symmetryPortrait opts rf cs outFile =
-  writeImage outFile $ symmFromFn opts (rf cs) colorWheel
+  writeImage outFile $ domainColoring opts (rf cs) (Function colorWheel)
 
 -- | Crate a wallpaper and write it to an output file.
 symmetryPattern :: RealFloat a
@@ -86,9 +86,9 @@ symmetryPattern opts rf cs typ pp inFile outFile = do
   dImg <- readImage inFile
   let img  = case dImg of
          Left e  -> error e
-         Right i ->  let img' = preProcess pp . toImageRGBA8 $ i
+         Right i ->  let img' = Picture (preProcess pp . toImageRGBA8 $ i)
                      in case typ of
-           Plain   -> symmetry opts (rf cs) img'
+           Plain   -> domainColoring opts (rf cs) img'
            Morph c -> morph opts (rf cs) c img'
            Blend g -> blend opts (rf cs) (recipe g cs) img'
   writeImage outFile img
@@ -106,10 +106,10 @@ rosettePattern opts cs pfold mirror pp inFile outFile = do
   dImg <- readImage inFile
   let img  = case dImg of
          Left e  -> error e
-         Right i -> let img' = preProcess pp . toImageRGBA8 $ i
+         Right i -> let img' = Picture (preProcess pp . toImageRGBA8 $ i)
                     in  if mirror
-                          then symmetry opts (rosettePM pfold cs) img'
-                          else symmetry opts (rosetteP pfold cs) img'
+                          then domainColoring opts (rosettePM pfold cs) img'
+                          else domainColoring opts (rosetteP pfold cs) img'
   writeImage outFile img
 
 recipe :: RealFloat a => SymmetryGroup a -> [Coef a] -> Recipe a

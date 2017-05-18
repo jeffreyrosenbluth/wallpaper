@@ -15,13 +15,10 @@
 module Core
   (
     -- * Domain Coloring
-    symmetry
-  , symmFromFn
+    domainColoring
   , blend
   , morph
   , mkRecipe
-  , getColor
-  , focusIn
 
     -- * Coefficients
   , negateCoefs
@@ -38,7 +35,6 @@ import           Codec.Picture
 import           Data.Complex
 
 -- Domain Coloring -------------------------------------------------------------
-
 -- | Creates a function to get the color of pixel (i, j) from a color wheel
 --   given 'Options', a 'Recipe' and the color wheel. You shouldn't need to
 --   use this function directly.
@@ -57,36 +53,29 @@ getColor opts rcp wheel i j = clamp (round x + w1 `div` 2) (round y + h1 `div` 2
       | m < 0 || n < 0 || m >= w1 || n >= h1 = black
       | otherwise = pixelAt wheel m n
 
--- | Center the coordinates at the origin and scale them to the range (-1, 1)
+-- | Center the coordinates at the origin and scale them based on 'repLength'
 focusIn :: RealFloat a => Int -> Int -> Int -> Recipe a -> Recipe a
 focusIn w h l rcp (x :+ y) =
   rcp ((x - fromIntegral w / 2) / l' :+ (fromIntegral h / 2 - y) / l')
     where
       l' = fromIntegral l
 
-symmFromFn :: (RealFloat a, Pixel p)
-                  => Options a
-                  -> Recipe a
-                  -> (Complex a -> p)
-                  -> Image p
-symmFromFn opts rcp f = generateImage color (width opts) (height opts)
+-- | Make an image from a set of 'Options', a 'Recipe' and a color source.
+domainColoring :: (RealFloat a, Pixel p, BlackWhite p)
+          => Options a -> Recipe a -> ColorSource a p -> Image p
+domainColoring opts rcp source = generateImage color (width opts) (height opts)
   where
-    color i j = f . rcp' $ (fromIntegral i :+ fromIntegral j)
-    rcp' = focusIn (width opts) (height opts) (repLength opts) rcp
-
-
--- | Make a symmetry image from a set of 'Options', a 'Recipe' and a color wheel.
-symmetry :: (RealFloat a, Pixel p, BlackWhite p)
-          => Options a -> Recipe a -> Image p -> Image p
-symmetry opts rcp wheel = generateImage (getColor opts rcp wheel)
-                                      (width opts)
-                                      (height opts)
+    color i j = case source of
+      Picture img -> getColor opts rcp img i j
+      Function f  ->
+        let rcp' = focusIn (width opts) (height opts) (repLength opts) rcp
+        in  f . rcp' $ (fromIntegral i :+ fromIntegral j)
 
 -- | Make a symmetry image from two 'Recipe's by linearly interpolation.
 --   The interpolation is along the horizontal axis.
 blend :: (RealFloat a, Pixel p, BlackWhite p)
-      => Options a -> Recipe a -> Recipe a -> Image p-> Image p
-blend opts rcp1 rcp2 = symmetry opts rcp
+      => Options a -> Recipe a -> Recipe a -> ColorSource a p -> Image p
+blend opts rcp1 rcp2 = domainColoring opts rcp
   where
     rcp z@(x :+ _) = let a = (x + m) / (2 * m)
                      in  a .*^ rcp2 z + (1 - a) .*^ rcp1 z
@@ -97,8 +86,8 @@ blend opts rcp1 rcp2 = symmetry opts rcp
 --   image stays constant at the left and right sides. Like 'blend' the
 --   interpolation is in the horizontal direction.
 morph :: (RealFloat a, Pixel p, BlackWhite p)
-      => Options a -> Recipe a -> a -> Image p -> Image p
-morph opts rcp c = symmetry opts rcp'
+      => Options a -> Recipe a -> a -> ColorSource a p -> Image p
+morph opts rcp c = domainColoring opts rcp'
   where
     rcp' z@(x :+ _) = exp (pi * phi c ((x+t/2)/t) .*^ im) * rcp z
     t = fromIntegral (width opts `div`repLength opts)
@@ -115,7 +104,6 @@ mkRecipe rf cs z = sum $ zipWith (*) as rs
     rs = ($ z) . uncurry rf <$> [(nCoord c, mCoord c) | c <- cs]
 
 -- Coefficients ----------------------------------------------------------------
-
 -- | Negate the indices of a coefficient.
 negateCoefs :: Coef a -> Coef a
 negateCoefs (Coef n m a) = Coef (-n) (-m) a
