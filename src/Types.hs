@@ -196,27 +196,13 @@ instance FromJSON PreProcess where
       _                     -> fail "Invalid Pre-process type"
   parseJSON _ = fail "Pre-process must be a String"
 
--- data ColorWheel
---   = Path FilePath
---   | Func
---   deriving (Show, Eq)
---
--- instance FromJSON ColorWheel where
---   parseJSON (Object v) = do
---     (src :: String) <- v .: "source"
---     case src of
---       "standard" -> pure Func
---       "file"     -> Path <$> v .: "path"
---       _          -> fail "Tried to parse an invalid color source."
---   parseJSON _  = fail "Expected a String for a color source type."
-
 -- | Settings for creating a wallpaper.
 data Wallpaper a = Wallpaper
   { wpGroup   :: SymmetryGroup a
   , wpCoefs   :: [Coef a]
   , wpType    :: WPtype a
   , wpOptions :: Options a
-  , wpWheel   :: FilePath
+  , wpWheel   :: Maybe FilePath
   , wpProcess :: PreProcess
   , wpPath    :: FilePath
   } deriving (Show, Eq, Functor)
@@ -228,7 +214,7 @@ instance FromJSON a => FromJSON (Wallpaper a) where
     <*> v .: "Coefficients"
     <*> v .:? "Type" .!= Plain
     <*> v .: "Options"
-    <*> v .: "Colorwheel-path"
+    <*> v .:? "Colorwheel-path" .!= Nothing
     <*> v .:? "Pre-process" .!= None
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Wallpaper value."
@@ -238,7 +224,7 @@ data Rosette a = Rosette
   , rsMirror  :: Bool
   , rsCoefs   :: [Coef a]
   , rsOptions :: Options a
-  , rsWheel   :: FilePath
+  , rsWheel   :: Maybe FilePath
   , rsProcess :: PreProcess
   , rsPath    :: FilePath
   } deriving (Show, Eq, Functor)
@@ -250,7 +236,7 @@ instance FromJSON a => FromJSON (Rosette a) where
     <*> v .: "Mirror"
     <*> v .: "Coefficients"
     <*> v .: "Options"
-    <*> v .: "Colorwheel-path"
+    <*> v .:? "Colorwheel-path" .!= Nothing
     <*> v .:? "Pre-process" .!= None
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Rosette value."

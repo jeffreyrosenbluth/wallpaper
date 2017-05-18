@@ -15,10 +15,8 @@
 module Portrait
   (
    -- * Wallpaper Generation
-    symmetryPattern
-  , rosettePattern
-  , phasePortrait
-  , symmetryPortrait
+    pattern
+  , rosette
   , recipe
 
   -- * Color Wheels
@@ -54,63 +52,66 @@ import           Data.Word            (Word8)
 import           System.FilePath      (takeExtension)
 
 -- Domain Coloring -------------------------------------------------------------
-phasePortrait :: RealFloat a
-         => Options a
-         -> Recipe a
-         -> FilePath
-         -> IO ()
-phasePortrait opts f outFile
-  = writeImage outFile $ domainColoring opts f (Function colorWheel)
-
-
-symmetryPortrait :: RealFloat a
-                 => Options a
-                 -> ([Coef a] -> Recipe a)
-                 -> [Coef a]
-                 -> FilePath
-                 -> IO ()
-symmetryPortrait opts rf cs outFile =
-  writeImage outFile $ domainColoring opts (rf cs) (Function colorWheel)
-
--- | Crate a wallpaper and write it to an output file.
-symmetryPattern :: RealFloat a
-                => Options a
-                -> ([Coef a] -> Recipe a)
-                -> [Coef a]
-                -> WPtype a
-                -> PreProcess
-                -> FilePath
-                -> FilePath
-                -> IO ()
-symmetryPattern opts rf cs typ pp inFile outFile = do
+-- | Crate a wallpaper or phase portrait.
+img2Pattern :: RealFloat a
+            => Options a
+            -> ([Coef a] -> Recipe a)
+            -> [Coef a]
+            -> WPtype a
+            -> PreProcess
+            -> FilePath
+            -> IO (Image PixelRGBA8)
+img2Pattern opts rf cs typ pp inFile = do
   dImg <- readImage inFile
-  let img  = case dImg of
-         Left e  -> error e
-         Right i ->  let img' = Picture (preProcess pp . toImageRGBA8 $ i)
-                     in case typ of
-           Plain   -> domainColoring opts (rf cs) img'
-           Morph c -> morph opts (rf cs) c img'
-           Blend g -> blend opts (rf cs) (recipe g cs) img'
-  writeImage outFile img
+  return $ case dImg of
+     Left e  -> error e
+     Right i ->  let img' = Picture (preProcess pp . toImageRGBA8 $ i)
+                 in case typ of
+       Plain   -> domainColoring opts (rf cs) img'
+       Morph c -> morph opts (rf cs) c img'
+       Blend g -> blend opts (rf cs) (recipe g cs) img'
 
-rosettePattern :: RealFloat a
+pattern :: RealFloat a
+        => Options a
+        -> ([Coef a] -> Recipe a)
+        -> [Coef a]
+        -> WPtype a
+        -> PreProcess
+        -> Maybe FilePath
+        -> FilePath
+        -> IO ()
+pattern opts rf cs typ pp mInFile outFile = do
+  case mInFile of
+    Just inFile -> writeImage outFile =<< img2Pattern opts rf cs typ pp inFile
+    Nothing     -> writeImage outFile
+                 $ domainColoring opts (rf cs) (Function colorWheel)
+
+rosette :: RealFloat a
                 => Options a
                 -> [Coef a]
                 -> Int
                 -> Bool
                 -> PreProcess
-                -> FilePath
+                -> Maybe FilePath
                 -> FilePath
                 -> IO ()
-rosettePattern opts cs pfold mirror pp inFile outFile = do
-  dImg <- readImage inFile
-  let img  = case dImg of
-         Left e  -> error e
-         Right i -> let img' = Picture (preProcess pp . toImageRGBA8 $ i)
-                    in  if mirror
-                          then domainColoring opts (rosettePM pfold cs) img'
-                          else domainColoring opts (rosetteP pfold cs) img'
-  writeImage outFile img
+rosette opts cs pfold mirror pp mInFile outFile = do
+  case mInFile of
+    Just inFile -> do
+      dImg <- readImage inFile
+      let img = case dImg of
+            Left e  -> error e
+            Right i -> let img' = Picture (preProcess pp . toImageRGBA8 $ i)
+                       in  if mirror
+                             then domainColoring opts (rosettePM pfold cs) img'
+                             else domainColoring opts (rosetteP pfold cs) img'
+      writeImage outFile img
+    Nothing -> do
+      let img = if mirror
+                  then domainColoring opts (rosettePM pfold cs) (Function colorWheel)
+                  else domainColoring opts (rosetteP pfold cs) (Function colorWheel)
+      writeImage outFile img
+
 
 recipe :: RealFloat a => SymmetryGroup a -> [Coef a] -> Recipe a
 recipe sg = case sg of

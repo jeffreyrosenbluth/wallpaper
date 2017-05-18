@@ -17,16 +17,10 @@ main = do
     Right w  -> wallpaper w
 
 wallpaper :: RealFloat a => Wallpaper a -> IO ()
-wallpaper wp = symmetryPattern (wpOptions wp)
-                               (recipe (wpGroup wp))
-                               (wpCoefs wp)
-                               (wpType wp)
-                               (wpProcess wp)
-                               (wpWheel wp)
-                               (wpPath wp)
-
-phase:: RealFloat a => Wallpaper a -> IO ()
-phase wp = symmetryPortrait (wpOptions wp)
-                            (recipe (wpGroup wp))
-                            (wpCoefs wp)
-                            (wpPath wp)
+wallpaper wp = pattern (wpOptions wp)
+                       (recipe (wpGroup wp))
+                       (wpCoefs wp)
+                       (wpType wp)
+                       (wpProcess wp)
+                       (wpWheel wp)
+                       (wpPath wp)
