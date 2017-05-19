@@ -15,6 +15,8 @@
 --
 -- Types and classes for creating symmtery images using the domain coloring
 -- algortihm.
+--
+-- <<examples/morph.png>>
 --------------------------------------------------------------------------------
 
 module Types
@@ -41,6 +43,8 @@ import           Data.Yaml
 -- | A 'Recipe' is a mapping from the complex plange to the complex plane.
 type Recipe a = Complex a -> Complex a
 
+-- | A color source can be either a JuicyPixels image or a function from
+--   a complex number to a pixel.
 data ColorSource a p
   = Picture (Image p)
   | Function (Complex a -> p)
@@ -67,7 +71,8 @@ instance FromJSON a => FromJSON (Coef a) where
     <*> v .: "A(n,m)"
   parseJSON _ = fail "Expected Object for Coef value."
 
--- | Settings for creating a symmetry image.
+-- | Settings for the size, repeat lenght, and scaling factor for creating a
+--   a domain coloring.
 data Options a = Options
   { width     :: Int -- ^ The width of the created image.
   , height    :: Int -- ^ The height of the created iamge.
@@ -93,15 +98,17 @@ defaultOpts = Options 750 750 150 0.5
 
 -- | The 17 Wallpaper groups and 7 Frieze groups.
 data SymmetryGroup a
-  = P1 a a
-  | P2 a a
-  | CM a
-  | CMM a
-  | PM a
-  | PG a
-  | PMM a
-  | PMG a
-  | PGG a
+  = P1 a a -- ^ Arguments are &#x3BE; and &#x3B7;.
+           --    The lattice vectors are 1 and &#x3BE; + /i/ &#x3B7;.
+  | P2 a a -- ^ Arguments are &#x3BE; and &#x3B7;.
+           --   The lattice vectors are 1 and &#x3BE; + /i/ &#x3B7;.
+  | CM a   -- ^ The argument is /b/ with lattice vectors 1//2 +- ib/.
+  | CMM a  -- ^ The argument is /b/ with lattice vectors 1//2 +- ib/.
+  | PM a   -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
+  | PG a   -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
+  | PMM a  -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
+  | PMG a  -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
+  | PGG a  -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
   | P4
   | P4M
   | P4G
@@ -219,6 +226,7 @@ instance FromJSON a => FromJSON (Wallpaper a) where
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Wallpaper value."
 
+-- | Settings for creating a rosette.
 data Rosette a = Rosette
   { rsFoldSym :: Int
   , rsMirror  :: Bool
@@ -241,6 +249,7 @@ instance FromJSON a => FromJSON (Rosette a) where
     <*> v .: "Output-path"
   parseJSON _ = fail "Expected Object for Rosette value."
 
+-- | Settings for creating a phase portrait.
 data Function a = Fn
   { fnOptions :: Options a
   , fnWeel    :: FilePath
