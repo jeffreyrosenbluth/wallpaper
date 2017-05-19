@@ -35,6 +35,8 @@ entire n m z = z ^^ n * conjugate z ^^ m
 --   /Note rosette recipe constuctors differ from those of wallpaper/
 --  /and friezes in that they filter out coefficient coordinates that/
 --  /do not satisfy n - m mod p = 0./
+--
+-- <<examples/rosetteP.png>>
 rosetteP :: RealFloat a => Int -> [Coef a] -> Recipe a
 rosetteP p cs = mkRecipe entire cs'
   where
@@ -44,6 +46,8 @@ rosetteP p cs = mkRecipe entire cs'
 --   /Note rosette recipe constuctors differ from those of wallpaper/
 --  /and friezes in that they filter out coefficient coordinates that/
 --  /do not satisfy n - m mod p = 0./
+--
+-- <<examples/rosettePM.png>>
 rosettePM :: RealFloat a => Int -> [Coef a] -> Recipe a
 rosettePM p cs = mkRecipe entire (nub $ cs' ++ (reverseCoefs <$> cs'))
   where
