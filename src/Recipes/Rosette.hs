@@ -47,7 +47,7 @@ rosetteP p cs = mkRecipe entire cs'
 --  /and friezes in that they filter out coefficient coordinates that/
 --  /do not satisfy n - m mod p = 0./
 --
--- <<examples/rosettePM.png>>rosetteP :: RealFloat a => Int -> [Coef a] -> Recipe a
+-- <<examples/rosettePM.png>>
 rosettePM :: RealFloat a => Int -> [Coef a] -> Recipe a
 rosettePM p cs = mkRecipe entire (nub $ cs' ++ (reverseCoefs <$> cs'))
   where
