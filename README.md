@@ -11,6 +11,7 @@ Install [stack](https://docs.haskellstack.org/en/stable/README/)
 
 ```
 git clone https://github.com/jeffreyrosenbluth/wallpaper.git
+cd wallpaper
 stack build
 stack exec wallpaper myconfig.yaml
 ```

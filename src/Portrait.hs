@@ -71,6 +71,7 @@ img2Pattern opts rf cs typ pp inFile = do
        Morph c -> morph opts (rf cs) c img'
        Blend g -> blend opts (rf cs) (recipe g cs) img'
 
+-- | Create and write a wallpaper or frieze image.
 pattern :: RealFloat a
         => Options a
         -> ([Coef a] -> Recipe a)
@@ -86,6 +87,7 @@ pattern opts rf cs typ pp mInFile outFile = do
     Nothing     -> writeImage outFile
                  $ domainColoring opts (rf cs) (Function colorWheel)
 
+-- | Create and write a rosette.
 rosette :: RealFloat a
                 => Options a
                 -> [Coef a]
@@ -113,6 +115,7 @@ rosette opts cs pfold mirror pp mInFile outFile = do
       writeImage outFile img
 
 
+-- | Build a recipe for a group.
 recipe :: RealFloat a => SymmetryGroup a -> [Coef a] -> Recipe a
 recipe sg = case sg of
   P1 a b -> p1 a b
@@ -168,6 +171,7 @@ hue radians = case hi of
 colorWheel :: RealFloat a => Complex a -> PixelRGBA8
 colorWheel z = hue (phase z)
 
+-- | Alter and image to use as a color wheel before making a pattern.
 preProcess :: (Pixel p, Invertible p) => PreProcess -> Image p -> Image p
 preProcess process = case process of
   FlipHorizontal     -> flipHorizontal
@@ -180,27 +184,32 @@ preProcess process = case process of
 
 -- Image Processing -------------------------------------------------------------
 
+-- | Invert the colors of an image.
 invertImage :: (Pixel p, Invertible p) => Image p -> Image p
 invertImage = pixelMap invert
 
+-- | Reflect and image about the horizontal axis.
 flipHorizontal :: Pixel a => Image a -> Image a
 flipHorizontal img@(Image w h _) = generateImage g  w h
   where
     g x = pixelAt img (w - 1 - x)
 {-# INLINEABLE flipHorizontal #-}
 
+-- | Reflect and image about the horizontal axis.
 flipVertical :: Pixel a => Image a -> Image a
 flipVertical img@(Image w h _) = generateImage g w h
   where
     g x y = pixelAt img x (h - 1 - y)
 {-# INLINEABLE flipVertical #-}
 
+-- | Reflect and image about the both axis.
 flipBoth :: Pixel a => Image a -> Image a
 flipBoth img@(Image w h _) = generateImage g w h
   where
     g x y = pixelAt img (w - 1 - x) (h - 1 - y)
 {-# INLINEABLE flipBoth #-}
 
+-- | Place two images side by side.
 beside :: Pixel a => Image a -> Image a -> Image a
 beside img1@(Image w1 h _) img2@(Image w2 _ _) =
   generateImage g (w1 + w2) h
@@ -210,6 +219,7 @@ beside img1@(Image w1 h _) img2@(Image w2 _ _) =
       | otherwise = pixelAt img2 (x - w1)
 {-# INLINEABLE beside #-}
 
+-- | Place the second image below the first.
 below :: Pixel a => Image a -> Image a -> Image a
 below img1@(Image w h1 _) img2@(Image _ h2 _) =
   generateImage g w (h1 + h2)
@@ -219,16 +229,21 @@ below img1@(Image w h1 _) img2@(Image _ h2 _) =
       | otherwise = pixelAt img2 x (y - h1)
 {-# INLINEABLE below #-}
 
+-- | Flip an image horizontally, invert it and place it below the
+--   original image.
 antiSymmHorizontal :: (Pixel a, Invertible a) => Image a -> Image a
 antiSymmHorizontal img = below img (flipHorizontal . invertImage $ img)
 {-# INLINEABLE antiSymmHorizontal #-}
 
+-- | Flip an image vertically, invert it and place it beside the
+--   original image.
 antiSymmVertical :: (Pixel a, Invertible a) => Image a -> Image a
 antiSymmVertical img = beside img (flipVertical . invertImage $ img)
 {-# INLINEABLE antiSymmVertical #-}
 
 -- Utilities --------------------------------------------------------------------
 
+-- | Convert a 'DynamicImage' to RGBA8 format.
 toImageRGBA8 :: DynamicImage -> Image PixelRGBA8
 toImageRGBA8 (ImageRGBA8 i)  = i
 toImageRGBA8 (ImageRGB8 i)   = promoteImage i
@@ -238,6 +253,7 @@ toImageRGBA8 (ImageYA8 i)    = promoteImage i
 toImageRGBA8 (ImageCMYK8 i)  = promoteImage (convertImage i :: Image PixelRGB8)
 toImageRGBA8 _               = error "Unsupported Pixel type"
 
+-- | Write a jpeg image to a file.
 writeJpeg :: Word8 -> FilePath -> Image PixelRGBA8 -> IO ()
 writeJpeg quality outFile img = L.writeFile outFile bs
   where
