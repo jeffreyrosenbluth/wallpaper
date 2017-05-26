@@ -13,7 +13,9 @@ Install [stack](https://docs.haskellstack.org/en/stable/README/)
 git clone https://github.com/jeffreyrosenbluth/wallpaper.git
 cd wallpaper
 stack build
-stack exec wallpaper myconfig.yaml
+stack exec wallpaper myWallpaper.yaml
+-- or
+stack exec rosette myRosette.yaml
 ```
 
 ### Wallpaper and Frieze
