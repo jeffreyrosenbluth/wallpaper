@@ -1,32 +1,3 @@
-# wallpaper
-## Symmetry Patterns
-Create wallpaper patterns using the domain coloring algorithm as described in
-
-[Creating Symmetry], by Frank A. Farris, (c) 2015 Princeton University Press.
-
-[Creating Symmetry]: https://www.amazon.com/Creating-Symmetry-Mathematics-Wallpaper-Patterns/dp/0691161739/ref=sr_1_1?ie=UTF8&qid=1495813829&sr=8-1&keywords=creating+symmetry
-
-## Installation
-Install [stack](https://docs.haskellstack.org/en/stable/README/)
-
-```
-git clone https://github.com/jeffreyrosenbluth/wallpaper.git
-cd wallpaper
-stack build
-stack exec wallpaper myWallpaper.yaml
--- or
-stack exec rosette myRosette.yaml
-```
-
-### Wallpaper and Frieze
-![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/examples/myWallpaper.jpg)
-
-To make a wallpaper or frieze image, run the wallpaper function with a yaml
-file like the following. There are many [examples].
-
-[examples]: https://github.com/jeffreyrosenbluth/wallpaper/tree/master/examples
-
-```yaml
 # The wallpaper or frieze symmetry group in short IUC notation.
 # If the group lattice takes parameters then they follow tagged
 # by there names, for example:
@@ -84,33 +55,3 @@ Pre-process: AntiSymmHorizontal
 # File to write the result. The file type will match the extension.
 # Choices for extenstion are: png, jpg, tif, and bmp.
 Output-path: myWallpaper.jpg
-```
-
-### Rosette
-
-![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/myRosette.jpg)
-
-To make a rosette, use a yaml file like the following. There are also some
-[examples], look at rosetteP.yaml and rosettePM.yaml.
-
-```yaml
-P-fold: 5    # the number of rotational symmetries
-Mirror: true # symmetric about the horizontal axis
-
-# (n - m) mod P-fold must be 0, otherwise the wave packet will not be included.
-Coefficients:
-- A(n,m): [0.5, 0]
-  n: 5  # (5 - 0) mod 5 = 0
-  m: 0
-- A(n,m): [0.3, 0]
-  n: 4  # (4 - (-6)) mod 5 = 0
-  m: -6
-Options:
-  width: 540
-  height: 540
-  repeat-length: 135
-  scale-factor: 0.5
-Colorwheel-path: examples/rose_small.png
-Pre-process: invert
-Output-path: myRosette.jpg
-```
