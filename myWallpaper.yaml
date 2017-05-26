@@ -36,10 +36,9 @@ Type:
   style: blend
   group:
     name: p31m
-    b: 1.5
 
 Options:
-  width: 675        # width in pixels of the output image
+  width: 810        # width in pixels of the output image
   height: 405       # height in pixels of the output image
   repeat-length: 90 # used to convert pixel coordinates to real numbers
   scale-factor: 0.5 # to scale the color wheel so that it contains the domain values
