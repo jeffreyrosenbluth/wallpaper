@@ -1,4 +1,4 @@
-# wallpaper
+# wallpaper [![Hackage version](https://img.shields.io/hackage/v/wallpaper.svg?style=flat)]
 ## Symmetry Patterns
 Create wallpaper patterns using the domain coloring algorithm as described in
 [Creating Symmetry], by Frank A. Farris, (c) 2015 Princeton University Press.
