@@ -72,7 +72,7 @@ Options:
   repeat-length: 90 # used to convert pixel coordinates to real numbers
   scale-factor: 0.5 # to scale the color wheel so that it contains the domain values
 
-# Optional, defualts to the standard artists color wheel of infinite size.
+# Optional, defaults to the standard artists color wheel of infinite size.
 Colorwheel-path: examples/rose_small.png
 
 # Optional, Preprocess the image, choices are: none, fliphorizontal,
