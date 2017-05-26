@@ -1,17 +1,17 @@
-P-fold: 5
+P-fold: 12
 Mirror: true
 Coefficients:
-- A(n,m): [0.5, 0]
-  n: 5
+- A(n,m): [0.5, 0.25]
+  n: 12
   m: 0
-- A(n,m): [0.3, 0]
-  n: 4
-  m: -6
+- A(n,m): [0.05, 0.05]
+  n: 9
+  m: -15
 Options:
-  width: 1080
-  height: 1080
-  repeat-length: 270
+  width: 540
+  height: 540
+  repeat-length: 180
   scale-factor: 0.5
-Colorwheel-path: rose.png
-Pre-process: antiSymmVertical
+Colorwheel-path: examples/rose_small.png
+Pre-process: invert
 Output-path: result.png

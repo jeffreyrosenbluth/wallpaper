@@ -19,10 +19,10 @@ stack exec rosette myRosette.yaml
 ```
 
 ### Wallpaper and Frieze
+![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/examples/readme.png)
+
 To make a wallpaper or frieze image, run the wallpaper function with a yaml
 file like the following. There are many [examples].
-
-![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/examples/readme.png)
 
 [examples]: https://github.com/jeffreyrosenbluth/wallpaper/tree/master/examples
 
@@ -93,12 +93,14 @@ To make a rosette, use a yaml file like the following. There are also some
 ```yaml
 P-fold: 5    # the number of rotational symmetries
 Mirror: true # symmetric about the horizontal axis
+
+# (n - m)  mod P-fold must be 0.
 Coefficients:
 - A(n,m): [0.5, 0]
-  n: 5
+  n: 5  # (5 - 0) mod 5 = 0
   m: 0
 - A(n,m): [0.3, 0]
-  n: 4
+  n: 4  # (4 - (-6)) mod 5 = 0
   m: -6
 Options:
   width: 1080
