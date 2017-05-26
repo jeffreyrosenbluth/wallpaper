@@ -6,7 +6,7 @@ file like the following. There are many [examples].
 
 ![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/examples/readme.png)
 
-[examples]: https://github.com/jeffreyrosenbluth/wallpaper/tree/master/examples.
+[examples]: https://github.com/jeffreyrosenbluth/wallpaper/tree/master/examples
 
 ```yaml
 # The wallpaper or frieze group in short IUC notation.
@@ -56,11 +56,33 @@ Options:
 Colorwheel-path: rose.png
 
 # Optional, Preprocess the image, choices are: none, fliphorizontal,
-# flipvertical, flipboth, invert,  antisymmvertical, and antisymmhorizontal.
+# flipvertical, flipboth, invert, antisymmvertical, and antisymmhorizontal.
 # The default is none.
 Pre-process: AntiSymmHorizontal
 
 # File to write the result. The file type will match the extension.
 # Choices for extenstion are: png, jpg, tif, and bmp.
+Output-path: result.png
+```
+To make a rosette, use a yaml file like the following. There are also some
+[examples], look at rosetteP.yaml and rosettePM.yaml.
+
+```yaml
+P-fold: 5    # the number of rotational symmetries
+Mirror: true # symmetric about the horizontal axis
+Coefficients:
+- A(n,m): [0.5, 0]
+  n: 5
+  m: 0
+- A(n,m): [0.3, 0]
+  n: 4
+  m: -6
+Options:
+  width: 1080
+  height: 1080
+  repeat-length: 270
+  scale-factor: 0.5
+Colorwheel-path: rose.png
+Pre-process: invert
 Output-path: result.png
 ```
