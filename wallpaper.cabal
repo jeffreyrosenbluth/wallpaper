@@ -1,5 +1,5 @@
 name:                wallpaper
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            A library and executable for creating
                      wallpaper, frieze, and rosette patterns.
 
