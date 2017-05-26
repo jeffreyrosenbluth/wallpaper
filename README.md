@@ -27,7 +27,7 @@ file like the following. There are many [examples].
 [examples]: https://github.com/jeffreyrosenbluth/wallpaper/tree/master/examples
 
 ```yaml
-# The wallpaper or frieze group in short IUC notation.
+# The wallpaper or frieze symmetry group in short IUC notation.
 # If the group lattice takes parameters then they follow tagged
 # by there names, for example:
 #   Group:
@@ -42,6 +42,8 @@ file like the following. There are many [examples].
 Group: p3m1
 
 # A list of doubly indexed complex coefficients for the wave function.
+# Additional wave packets will be added in order to create the symmetries in
+# the specified symmetry group.
 Coefficients:
 - A(n,m): [0.75, 0.25] # 0.75 + 0.25i
   n: 1                 # first index of coefficient
@@ -85,7 +87,7 @@ Output-path: result.png
 
 ### Rosette
 
-![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/examples/rosettePM.png)
+![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/myRosette.png)
 
 To make a rosette, use a yaml file like the following. There are also some
 [examples], look at rosetteP.yaml and rosettePM.yaml.
@@ -94,7 +96,7 @@ To make a rosette, use a yaml file like the following. There are also some
 P-fold: 5    # the number of rotational symmetries
 Mirror: true # symmetric about the horizontal axis
 
-# (n - m)  mod P-fold must be 0.
+# (n - m) mod P-fold must be 0, otherwise the wave packet will not be included.
 Coefficients:
 - A(n,m): [0.5, 0]
   n: 5  # (5 - 0) mod 5 = 0
@@ -103,11 +105,11 @@ Coefficients:
   n: 4  # (4 - (-6)) mod 5 = 0
   m: -6
 Options:
-  width: 1080
-  height: 1080
-  repeat-length: 270
+  width: 540
+  height: 540
+  repeat-length: 135
   scale-factor: 0.5
-Colorwheel-path: rose.png
+Colorwheel-path: examples/rose_small.png
 Pre-process: invert
-Output-path: result.png
+Output-path: myRostte.png
 ```

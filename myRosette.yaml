@@ -1,0 +1,19 @@
+P-fold: 5    # the number of rotational symmetries
+Mirror: true # symmetric about the horizontal axis
+
+# (n - m) mod P-fold must be 0, otherwise the wave packet will not be included.
+Coefficients:
+- A(n,m): [0.5, 0]
+  n: 5  # (5 - 0) mod 5 = 0
+  m: 0
+- A(n,m): [0.3, 0]
+  n: 4  # (4 - (-6)) mod 5 = 0
+  m: -6
+Options:
+  width: 540
+  height: 540
+  repeat-length: 135
+  scale-factor: 0.5
+Colorwheel-path: examples/rose_small.png
+Pre-process: invert
+Output-path: myRosette.png
