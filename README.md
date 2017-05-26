@@ -84,6 +84,9 @@ Output-path: result.png
 ```
 
 ### Rosette
+
+![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/examples/rrosettePM.png)
+
 To make a rosette, use a yaml file like the following. There are also some
 [examples], look at rosetteP.yaml and rosettePM.yaml.
 

@@ -80,11 +80,11 @@ import           Data.List    (nub)
 enm :: RealFloat a => Int -> Int -> a -> a -> Complex a
 enm n m x y = exp (2 * pi * (fromIntegral n * x + fromIntegral m * y) .*^ im)
 
--- | Wave packets to create 2-fold symmetry.
+-- | Wave packets to create 2-fold rotational symmetry.
 tnm :: RealFloat a => Int -> Int -> a -> a -> Complex a
 tnm n m x y = 0.5 * (enm n m x y + enm (-n) (-m) x y)
 
--- | Wave packets to create 3-fold symmetry.
+-- | Wave packets to create 3-fold rotational symmetry.
 wnm :: RealFloat a => Int -> Int -> a -> a -> Complex a
 wnm n m x y = (1/3) * (enm n m x y + enm m (-n - m) x y + enm (-n - m) n x y)
 
