@@ -12,11 +12,11 @@ description:         @wallpaper@ provides the tools needed to make your own
                      algorithm to create recipes that convert an arbitrary image
                      to a pattern. For example, using the this image
                      .
-                     <<examples/rose_small.png>>
+                     <<https://raw.githubusercontent.com/jeffreyrosenbluth/wallpaper/master/examples/rose_small.png>>
                      .
                      We can make
                      .
-                     <<examples/beach_morph.png>>
+                     <<https://raw.githubusercontent.com/jeffreyrosenbluth/wallpaper/master/examples/beach_morph.png>>
                      .
                      For maximum flexibily the @wallpaper@ library provides an
                      EDSL for their creation,
@@ -24,7 +24,7 @@ description:         @wallpaper@ provides the tools needed to make your own
                      can be used with a yaml file to create a large variety of
                      patterns.
 
-homepage:            https://github.com/githubuser/wallpaper#readme
+homepage:            https://github.com/jeffreyrosenbluth/wallpaper#readme
 license:             BSD3
 license-file:        LICENSE
 author:              Jeffrey Rosenbluth

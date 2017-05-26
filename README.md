@@ -20,7 +20,7 @@ stack exec rosette myRosette.yaml
 ```
 
 ### Wallpaper and Frieze
-![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/myWallpaper.jpg)
+![Example]<<https://raw.githubusercontent.com/jeffreyrosenbluth/wallpaper/master/myWallpaper.jpg>>
 
 To make a wallpaper or frieze image, run the wallpaper function with a yaml
 file like the following. There are many [examples].
@@ -88,7 +88,7 @@ Output-path: myWallpaper.jpg
 
 ### Rosette
 
-![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/myRosette.jpg)
+![example]<<https://raw.githubusercontent.com/jeffreyrosenbluth/wallpaper/master/myRosette.jpg>>
 
 To make a rosette, use a yaml file like the following. There are also some
 [examples], look at rosetteP.yaml and rosettePM.yaml.
