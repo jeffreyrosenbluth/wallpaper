@@ -3,7 +3,7 @@
 ### Wallpaper and Frieze
 To make a wallpaper or frieze image, run the wallpaper function with a yaml
 file like the following. There are many
-![examples](https://github.com/jeffreyrosenbluth/wallpapeer/exampels/)
+![examples](https://github.com/jeffreyrosenbluth/wallpaper/tree/master/examples)
 
 ```yaml
 # The wallpaper or frieze group in short IUC notation.
