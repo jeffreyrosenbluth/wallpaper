@@ -1,8 +1,9 @@
 # wallpaper
 ## Symmetry Patterns
 Create wallpaper patterns using the domain coloring algorithm as described in
-
 [Creating Symmetry], by Frank A. Farris, (c) 2015 Princeton University Press.
+
+The api is likely to change as this is still an alpha release.
 
 [Creating Symmetry]: https://www.amazon.com/Creating-Symmetry-Mathematics-Wallpaper-Patterns/dp/0691161739/ref=sr_1_1?ie=UTF8&qid=1495813829&sr=8-1&keywords=creating+symmetry
 
