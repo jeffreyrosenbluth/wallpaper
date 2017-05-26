@@ -6,6 +6,15 @@ Create wallpaper patterns using the domain coloring algorithm as described in
 
 [Creating Symmetry]: https://www.amazon.com/Creating-Symmetry-Mathematics-Wallpaper-Patterns/dp/0691161739/ref=sr_1_1?ie=UTF8&qid=1495813829&sr=8-1&keywords=creating+symmetry
 
+## Installation
+Install [stack](https://docs.haskellstack.org/en/stable/README/)
+
+```
+git clone https://github.com/jeffreyrosenbluth/wallpaper.git
+stack build
+stack exec wallpaper myconfig.yaml
+```
+
 ### Wallpaper and Frieze
 To make a wallpaper or frieze image, run the wallpaper function with a yaml
 file like the following. There are many [examples].
@@ -71,7 +80,7 @@ Pre-process: AntiSymmHorizontal
 Output-path: result.png
 ```
 
-### Wallpaper and Frieze
+### Rosette
 To make a rosette, use a yaml file like the following. There are also some
 [examples], look at rosetteP.yaml and rosettePM.yaml.
 
