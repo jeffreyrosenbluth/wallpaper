@@ -4,7 +4,7 @@
 To make a wallpaper or frieze image, run the wallpaper function with a yaml
 file like the following. There are many [examples].
 
-![example](https://github.com/jeffreyrosenbluth/wallpaper/tree/master/examples/readme.png)
+![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/examples/readme.png)
 
 [examples]: https://github.com/jeffreyrosenbluth/wallpaper/tree/master/examples.
 
