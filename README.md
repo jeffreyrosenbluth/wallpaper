@@ -87,7 +87,7 @@ Output-path: result.png
 
 ### Rosette
 
-![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/myRosette.png)
+![example](https://github.com/jeffreyrosenbluth/wallpaper/blob/master/myRosette.jpg)
 
 To make a rosette, use a yaml file like the following. There are also some
 [examples], look at rosetteP.yaml and rosettePM.yaml.
@@ -111,5 +111,5 @@ Options:
   scale-factor: 0.5
 Colorwheel-path: examples/rose_small.png
 Pre-process: invert
-Output-path: myRostte.png
+Output-path: myRosette.jpg
 ```

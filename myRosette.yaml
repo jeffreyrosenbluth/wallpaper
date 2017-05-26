@@ -16,4 +16,4 @@ Options:
   scale-factor: 0.5
 Colorwheel-path: examples/rose_small.png
 Pre-process: invert
-Output-path: myRosette.png
+Output-path: myRosette.jpg
