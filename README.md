@@ -1,5 +1,11 @@
 # wallpaper
 ## Symmetry Patterns
+Create wallpaper patterns using the domain coloring algorithm as described in
+
+[Creating Symmetry], by Frank A. Farris, (c) 2015 Princeton University Press.
+
+[Creating Symmetry]: https://www.amazon.com/Creating-Symmetry-Mathematics-Wallpaper-Patterns/dp/0691161739/ref=sr_1_1?ie=UTF8&qid=1495813829&sr=8-1&keywords=creating+symmetry
+
 ### Wallpaper and Frieze
 To make a wallpaper or frieze image, run the wallpaper function with a yaml
 file like the following. There are many [examples].
@@ -64,6 +70,8 @@ Pre-process: AntiSymmHorizontal
 # Choices for extenstion are: png, jpg, tif, and bmp.
 Output-path: result.png
 ```
+
+### Wallpaper and Frieze
 To make a rosette, use a yaml file like the following. There are also some
 [examples], look at rosetteP.yaml and rosettePM.yaml.
 
