@@ -91,4 +91,4 @@ test-suite wallpaper-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/wallpaper
+  location: https://github.com/jeffreyrosenbluth/wallpaper

@@ -41,7 +41,7 @@ file like the following. There are many [examples].
 #   Group: p4
 Group: p3m1
 
-# A list of doubly indexed coefficients for the wave functions.
+# A list of doubly indexed complex coefficients for the wave function.
 Coefficients:
 - A(n,m): [0.75, 0.25] # 0.75 + 0.25i
   n: 1                 # first index of coefficient
