@@ -11,7 +11,9 @@
 module Complextra
   ( scaleZ
   , (.*^)
+  , fromReal
   , im
+  , re
   ) where
 
 import           Data.Complex
@@ -25,6 +27,11 @@ scaleZ k z = (k :+ 0) * z
 (.*^) = scaleZ
 infixl 7 .*^
 
--- | The square root of -1, i.e. i.
-im :: Num a => Complex a
-im = 0 :+ 1
+fromReal :: Num a => a -> Complex a
+fromReal x = x :+ 0
+
+im :: Complex a -> a
+im = imagPart
+
+re :: Complex a -> a
+re = realPart

@@ -77,8 +77,11 @@ data Options a = Options
   { width     :: Int -- ^ The width of the created image.
   , height    :: Int -- ^ The height of the created iamge.
   , repLength :: Int -- ^ The length of the pattern to repeat.
+  , origin    :: Complex a
   , scale     :: a   -- ^ Usually set less than 1, to compensate for the
                      --   fact that the color wheel is not infinite.
+  , rotation   :: a
+  , morphing   :: Bool
   } deriving (Show, Eq, Functor)
 
 instance FromJSON a => FromJSON (Options a) where
@@ -87,14 +90,17 @@ instance FromJSON a => FromJSON (Options a) where
     <$> v .: "width"
     <*> v .: "height"
     <*> v .: "repeat-length"
+    <*> v .: "origin"
     <*> v .: "scale-factor"
+    <*> v .: "rotation"
+    <*> v .: "morphing"
   parseJSON _ = fail "Expected Object for a Options value."
 
 -- | The defaul 'Options' creates a square 750 x 750 pixel image,
 --   with a repeat of 150 pixels and scales the pixel lookup coordintes
 --   by 1/2.
 defaultOpts :: Options Double
-defaultOpts = Options 750 750 150 0.5
+defaultOpts = Options 750 750 150 (0 :+ 0) 0.5 0 False
 
 -- | The 17 Wallpaper groups and 7 Frieze groups.
 data SymmetryGroup a

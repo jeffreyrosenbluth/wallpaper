@@ -33,15 +33,18 @@ Coefficients:
 # Blend interpolates horizontally between two different wallpaper groups.
 # If left unspecified type will default to style: plain.
 Type:
-  style: blend
+  style: plain
   group:
     name: p31m
 
 Options:
-  width: 945        # width in pixels of the output image
-  height: 405       # height in pixels of the output image
+  width: 600        # width in pixels of the output image
+  height: 480       # height in pixels of the output image
+  origin: [0, 0]
   repeat-length: 90 # used to convert pixel coordinates to real numbers
-  scale-factor: 0.5 # to scale the color wheel so that it contains the domain values
+  scale-factor: 1 # to scale the color wheel so that it contains the domain values
+  rotation: 0
+  morphing: False
 
 # Optional, defualts to the standard artists color wheel of infinite size.
 Colorwheel-path: examples/rose_small.png
@@ -49,8 +52,8 @@ Colorwheel-path: examples/rose_small.png
 # Optional, Preprocess the image, choices are: none, fliphorizontal,
 # flipvertical, flipboth, invert, antisymmvertical, and antisymmhorizontal.
 # The default is none.
-Pre-process: AntiSymmHorizontal
+Pre-process: None
 
 # File to write the result. The file type will match the extension.
 # Choices for extenstion are: png, jpg, tif, and bmp.
-Output-path: myWallpaper.jpg
+Output-path: result.png

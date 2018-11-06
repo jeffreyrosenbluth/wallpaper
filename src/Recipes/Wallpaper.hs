@@ -67,7 +67,6 @@ module Recipes.Wallpaper
   , wnm
   ) where
 
-import           Complextra
 import           Core
 import           Types
 
@@ -78,7 +77,7 @@ import           Data.List    (nub)
 
 -- | Periodic waves with respect to two translations. A Fourier vector.
 enm :: RealFloat a => Int -> Int -> a -> a -> Complex a
-enm n m x y = exp (2 * pi * (fromIntegral n * x + fromIntegral m * y) .*^ im)
+enm n m x y = cis $ 2 * pi * (fromIntegral n * x + fromIntegral m * y)
 
 -- | Wave packets to create 2-fold rotational symmetry.
 tnm :: RealFloat a => Int -> Int -> a -> a -> Complex a

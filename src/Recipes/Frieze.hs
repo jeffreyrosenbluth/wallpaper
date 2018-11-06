@@ -45,8 +45,10 @@ import           Data.List    (nub)
 
 -- | Frieze wave function.
 nm :: RealFloat a => Int -> Int -> Recipe a
-nm n m z = exp (fromIntegral n .*^ (im * z))
-         * exp (fromIntegral m .*^ (im * conjugate z))
+nm n m z = exp (fromIntegral n .*^ (i * z))
+         * exp (fromIntegral m .*^ (i * conjugate z))
+  where
+    i = 0 :+ 1
 
 --  Frieze Recipes ---------------------------------------------------------------
 
