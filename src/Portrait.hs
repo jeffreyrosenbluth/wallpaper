@@ -43,21 +43,20 @@ import           Recipes.Frieze
 import           Recipes.Rosette
 import           Recipes.Wallpaper
 import           Types
+import           Complextra
 
 import           Codec.Picture
 import           Codec.Picture.Types
 import qualified Data.ByteString.Lazy as L (writeFile)
-import           Data.Complex
 import           Data.Word            (Word8)
 import           System.FilePath      (takeExtension)
 
 -- Domain Coloring -------------------------------------------------------------
 -- | Crate a wallpaper or phase portrait.
-img2Pattern :: RealFloat a
-            => Options a
-            -> ([Coef a] -> Recipe a)
-            -> [Coef a]
-            -> WPtype a
+img2Pattern :: Options
+            -> ([Coef] -> Recipe)
+            -> [Coef]
+            -> WPtype
             -> PreProcess
             -> FilePath
             -> IO (Image PixelRGBA8)
@@ -72,11 +71,10 @@ img2Pattern opts rf cs typ pp inFile = do
        Blend g -> blend opts (rf cs) (recipe g cs) img'
 
 -- | Create and write a wallpaper or frieze image.
-pattern :: RealFloat a
-        => Options a
-        -> ([Coef a] -> Recipe a)
-        -> [Coef a]
-        -> WPtype a
+pattern :: Options
+        -> ([Coef] -> Recipe)
+        -> [Coef]
+        -> WPtype
         -> PreProcess
         -> Maybe FilePath
         -> FilePath
@@ -88,15 +86,14 @@ pattern opts rf cs typ pp mInFile outFile = do
                  $ domainColoring opts (rf cs) (Function colorWheel)
 
 -- | Create and write a rosette.
-rosette :: RealFloat a
-                => Options a
-                -> [Coef a]
-                -> Int
-                -> Bool
-                -> PreProcess
-                -> Maybe FilePath
-                -> FilePath
-                -> IO ()
+rosette :: Options
+        -> [Coef]
+        -> Int
+        -> Bool
+        -> PreProcess
+        -> Maybe FilePath
+        -> FilePath
+        -> IO ()
 rosette opts cs pfold mirror pp mInFile outFile = do
   case mInFile of
     Just inFile -> do
@@ -116,7 +113,7 @@ rosette opts cs pfold mirror pp mInFile outFile = do
 
 
 -- | Build a recipe for a group.
-recipe :: RealFloat a => SymmetryGroup a -> [Coef a] -> Recipe a
+recipe :: SymmetryGroup -> [Coef] -> Recipe
 recipe sg = case sg of
   P1 a b -> p1 a b
   P2 a b -> p2 a b
@@ -166,9 +163,9 @@ hue radians = case hi of
       where
         (_, f) :: (Int, a) = properFraction x
 
--- | A Color wheel on the entire complex plane.
---   The color is solely based on the phase of the complex number.
-colorWheel :: RealFloat a => Complex a -> PixelRGBA8
+-- | A Color wheel on the entire Complex plane.
+--   The color is solely based on the phase of the Complex number.
+colorWheel :: Complex -> PixelRGBA8
 colorWheel z = hue (phase z)
 
 -- | Alter and image to use as a color wheel before making a pattern.

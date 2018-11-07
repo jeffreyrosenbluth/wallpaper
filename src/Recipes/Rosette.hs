@@ -24,11 +24,11 @@ module Recipes.Rosette
   ) where
 
 import           Core
-import           Data.Complex
+import           Complextra
 import           Data.List    (nub)
 import           Types
 
-entire :: RealFloat a => Int -> Int -> Recipe a
+entire :: Int -> Int -> Recipe
 entire n m z = z ^^ n * conjugate z ^^ m
 
 -- | Rosette recipe with p-fold symmetry.
@@ -37,7 +37,7 @@ entire n m z = z ^^ n * conjugate z ^^ m
 --  /do not satisfy n - m mod p = 0./
 --
 -- <<examples/rosetteP.png>>
-rosetteP :: RealFloat a => Int -> [Coef a] -> Recipe a
+rosetteP :: Int -> [Coef] -> Recipe
 rosetteP p cs = mkRecipe entire cs'
   where
     cs' = filter (\(Coef n m _) -> ((n-m) `mod` p) == 0) cs
@@ -48,7 +48,7 @@ rosetteP p cs = mkRecipe entire cs'
 --  /do not satisfy n - m mod p = 0./
 --
 -- <<examples/rosettePM.png>>
-rosettePM :: RealFloat a => Int -> [Coef a] -> Recipe a
+rosettePM :: Int -> [Coef] -> Recipe
 rosettePM p cs = mkRecipe entire (nub $ cs' ++ (reverseCoefs <$> cs'))
   where
     cs' = filter (\(Coef n m _) -> ((n-m) `mod` p) == 0) cs

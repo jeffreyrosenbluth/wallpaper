@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor        #-}
+{-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE OverloadedStrings    #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE StrictData           #-}
@@ -35,35 +35,36 @@ module Types
   , BlackWhite(..)
   ) where
 
+import           Complextra
+
 import           Codec.Picture
-import           Data.Complex
 import           Data.Text     (Text, toLower)
 import           Data.Yaml
 
--- | A 'Recipe' is a mapping from the complex plange to the complex plane.
-type Recipe a = Complex a -> Complex a
+-- | A 'Recipe' is a mapping from the Complex plange to the Complex plane.
+type Recipe = Complex -> Complex
 
 -- | A color source can be either a JuicyPixels image or a function from
---   a complex number to a pixel.
-data ColorSource a p
+--   a Complex number to a pixel.
+data ColorSource p
   = Picture (Image p)
-  | Function (Complex a -> p)
+  | Function (Complex -> p)
 
 -- | The coefficents used to build a symmetry recipe, C_nm. A coeffient
---   is a doubley indexed complex number
-data Coef a = Coef
+--   is a doubley indexed Complex number
+data Coef = Coef
   { nCoord :: Int       -- ^ The first index.
   , mCoord :: Int       -- ^ The second index.
-  , anm    :: Complex a -- ^ The coefficient.
-  } deriving (Show, Eq, Functor)
+  , anm    :: Complex -- ^ The coefficient.
+  } deriving (Show, Eq)
 
-instance FromJSON a => FromJSON (Complex a) where
+instance FromJSON Complex where
   parseJSON a@(Array _) = do
     (r, i) <- parseJSON a
     return $ r :+ i
   parseJSON _ = fail "Expected Array for a Complex value."
 
-instance FromJSON a => FromJSON (Coef a) where
+instance FromJSON Coef where
   parseJSON (Object v)
     =   Coef
     <$> v .: "n"
@@ -73,18 +74,18 @@ instance FromJSON a => FromJSON (Coef a) where
 
 -- | Settings for the size, repeat lenght, and scaling factor for creating a
 --   a domain coloring.
-data Options a = Options
+data Options = Options
   { width     :: Int -- ^ The width of the created image.
   , height    :: Int -- ^ The height of the created iamge.
   , repLength :: Int -- ^ The length of the pattern to repeat.
-  , origin    :: Complex a
-  , scale     :: a   -- ^ Usually set less than 1, to compensate for the
+  , origin    :: Complex
+  , scale     :: Double   -- ^ Usually set less than 1, to Complexensate for the
                      --   fact that the color wheel is not infinite.
-  , rotation   :: a
+  , rotation   :: Double
   , morphing   :: Bool
-  } deriving (Show, Eq, Functor)
+  } deriving (Show, Eq)
 
-instance FromJSON a => FromJSON (Options a) where
+instance FromJSON Options where
   parseJSON (Object v)
     =   Options
     <$> v .: "width"
@@ -99,22 +100,22 @@ instance FromJSON a => FromJSON (Options a) where
 -- | The defaul 'Options' creates a square 750 x 750 pixel image,
 --   with a repeat of 150 pixels and scales the pixel lookup coordintes
 --   by 1/2.
-defaultOpts :: Options Double
+defaultOpts :: Options
 defaultOpts = Options 750 750 150 (0 :+ 0) 0.5 0 False
 
 -- | The 17 Wallpaper groups and 7 Frieze groups.
-data SymmetryGroup a
-  = P1 a a -- ^ Arguments are &#x3BE; and &#x3B7;.
+data SymmetryGroup
+  = P1 Double Double -- ^ Arguments are &#x3BE; and &#x3B7;.
            --    The lattice vectors are 1 and &#x3BE; + /i/ &#x3B7;.
-  | P2 a a -- ^ Arguments are &#x3BE; and &#x3B7;.
+  | P2 Double Double -- ^ Arguments are &#x3BE; and &#x3B7;.
            --   The lattice vectors are 1 and &#x3BE; + /i/ &#x3B7;.
-  | CM a   -- ^ The argument is /b/ with lattice vectors 1//2 +- ib/.
-  | CMM a  -- ^ The argument is /b/ with lattice vectors 1//2 +- ib/.
-  | PM a   -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
-  | PG a   -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
-  | PMM a  -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
-  | PMG a  -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
-  | PGG a  -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
+  | CM Double   -- ^ The argument is /b/ with lattice vectors 1//2 +- ib/.
+  | CMM Double  -- ^ The argument is /b/ with lattice vectors 1//2 +- ib/.
+  | PM Double   -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
+  | PG Double   -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
+  | PMM Double  -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
+  | PMG Double  -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
+  | PGG Double  -- ^ The argument is /L/ with lattice vectors 1 and /iL/.
   | P4
   | P4M
   | P4G
@@ -130,9 +131,9 @@ data SymmetryGroup a
   | P11G
   | P2MM
   | P2MG
-  deriving (Show, Eq, Functor)
+  deriving (Show, Eq)
 
-instance FromJSON a => FromJSON (SymmetryGroup a) where
+instance FromJSON SymmetryGroup where
   parseJSON (Object v) = do
     (name :: Text) <- v .: "name"
     case toLower name of
@@ -149,7 +150,7 @@ instance FromJSON a => FromJSON (SymmetryGroup a) where
   parseJSON (String s) = parseGroup s
   parseJSON _ = fail "Group must be an object or String"
 
-parseGroup :: Monad m => Text -> m (SymmetryGroup a)
+parseGroup :: Monad m => Text -> m SymmetryGroup
 parseGroup s = case toLower s of
   "p4"   -> pure P4
   "p4m"  -> pure P4M
@@ -169,13 +170,13 @@ parseGroup s = case toLower s of
   _      -> fail "Tried to parse an invalid group name."
 
 -- | The type of wallpaper to produce.
-data WPtype a
+data WPtype
   = Plain
-  | Morph a
-  | Blend (SymmetryGroup a)
-  deriving (Show, Eq, Functor)
+  | Morph Double
+  | Blend SymmetryGroup
+  deriving (Show, Eq)
 
-instance FromJSON a => FromJSON (WPtype a) where
+instance FromJSON WPtype where
   parseJSON (Object v) = do
     (typ :: String) <- v .: "style"
     case typ of
@@ -210,17 +211,17 @@ instance FromJSON PreProcess where
   parseJSON _ = fail "Pre-process must be a String"
 
 -- | Settings for creating a wallpaper.
-data Wallpaper a = Wallpaper
-  { wpGroup   :: SymmetryGroup a
-  , wpCoefs   :: [Coef a]
-  , wpType    :: WPtype a
-  , wpOptions :: Options a
+data Wallpaper = Wallpaper
+  { wpGroup   :: SymmetryGroup
+  , wpCoefs   :: [Coef]
+  , wpType    :: WPtype
+  , wpOptions :: Options
   , wpWheel   :: Maybe FilePath
   , wpProcess :: PreProcess
   , wpPath    :: FilePath
-  } deriving (Show, Eq, Functor)
+  } deriving (Show, Eq)
 
-instance FromJSON a => FromJSON (Wallpaper a) where
+instance FromJSON Wallpaper where
   parseJSON (Object v)
     =   Wallpaper
     <$> v .: "Group"
@@ -233,17 +234,17 @@ instance FromJSON a => FromJSON (Wallpaper a) where
   parseJSON _ = fail "Expected Object for Wallpaper value."
 
 -- | Settings for creating a rosette.
-data Rosette a = Rosette
+data Rosette = Rosette
   { rsFoldSym :: Int
   , rsMirror  :: Bool
-  , rsCoefs   :: [Coef a]
-  , rsOptions :: Options a
+  , rsCoefs   :: [Coef]
+  , rsOptions :: Options
   , rsWheel   :: Maybe FilePath
   , rsProcess :: PreProcess
   , rsPath    :: FilePath
-  } deriving (Show, Eq, Functor)
+  } deriving (Show, Eq)
 
-instance FromJSON a => FromJSON (Rosette a) where
+instance FromJSON Rosette where
   parseJSON (Object v)
     =   Rosette
     <$> v .: "P-fold"
@@ -256,12 +257,12 @@ instance FromJSON a => FromJSON (Rosette a) where
   parseJSON _ = fail "Expected Object for Rosette value."
 
 -- | Settings for creating a phase portrait.
-data Function a = Fn
-  { fnOptions :: Options a
+data Function = Fn
+  { fnOptions :: Options
   , fnWeel    :: FilePath
   , fnProcess :: PreProcess
   , fnPath    :: FilePath
-  } deriving (Show, Eq, Functor)
+  } deriving (Show, Eq)
 
 
 --------------------------------------------------------------------------------

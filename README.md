@@ -42,7 +42,7 @@ file like the following. There are many [examples].
 #   Group: p4
 Group: p3m1
 
-# A list of doubly indexed complex coefficients for the wave function.
+# A list of doubly indexed Complex coefficients for the wave function.
 # Additional wave packets will be added in order to create the symmetries in
 # the specified symmetry group.
 Coefficients:

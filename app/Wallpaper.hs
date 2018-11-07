@@ -11,12 +11,12 @@ import           System.Environment
 main :: IO ()
 main = do
   [yamlFile] <- getArgs
-  (wp :: Either ParseException (Wallpaper Double)) <- decodeFileEither yamlFile
+  (wp :: Either ParseException Wallpaper) <- decodeFileEither yamlFile
   case wp of
     Left e   -> error (show e)
     Right w  -> wallpaper w
 
-wallpaper :: RealFloat a => Wallpaper a -> IO ()
+wallpaper :: Wallpaper -> IO ()
 wallpaper wp = pattern (wpOptions wp)
                        (recipe (wpGroup wp))
                        (wpCoefs wp)

@@ -33,15 +33,14 @@ import           Complextra
 import           Types
 
 import           Codec.Picture
-import           Data.Complex
 import           Data.List (foldl')
 
 -- Domain Coloring -------------------------------------------------------------
 -- | Creates a function to get the color of pixel (i, j) from a color wheel
 --   given 'Options', a 'Recipe' and the color wheel. You shouldn't need to
 --   use this function directly.
-getColor :: (RealFloat a, Pixel p, BlackWhite p)
-          => Options a -> Recipe a -> Image p -> Int -> Int -> p
+getColor :: (Pixel p, BlackWhite p)
+          => Options -> Recipe -> Image p -> Int -> Int -> p
 getColor opts rcp wheel i j = clamp (floor (re z) + w1 `div` 2 + floor x)
                                     (floor (im z) + h1 `div` 2 + floor y)
   where
@@ -66,25 +65,25 @@ getColor opts rcp wheel i j = clamp (floor (re z) + w1 `div` 2 + floor x)
            | otherwise = n
 
 -- | Center the coordinates at the origin and scale them based on 'repLength'
-focusIn :: RealFloat a => Int -> Int -> Int -> Recipe a -> Recipe a
+focusIn :: Int -> Int -> Int -> Recipe -> Recipe
 focusIn w h l rcp (x :+ y) =
   rcp ((x - fromIntegral w / 2) / l' :+ (fromIntegral h / 2 - y) / l')
     where
       l' = fromIntegral l
 
 -- | Make a recipe from a lattice and a list of Coefficients.
-mkRecipe :: RealFloat a => (Int -> Int -> Recipe a) -> [Coef a] -> Recipe a
-mkRecipe rf cs z = f z * fromReal (1/s)
+mkRecipe :: (Int -> Int -> Recipe) -> [Coef] -> Recipe
+mkRecipe rf cs = \z -> f z * fromReal (1/s)
   where
-    degrees = fromIntegral <$> [0,59..359 :: Int]
+    degrees = fromIntegral <$> [0..359 :: Int]
     f x = sum ((\(i, j, y) -> y * rf i j x)
-            <$> [(nCoord c, mCoord c, anm c) | c <- cs])
-    m  = foldl' (\a b -> max a (magnitude . f $ cis (2 * pi * b / 360))) 0 degrees
+      <$> [(nCoord c, mCoord c, anm c) | c <- cs])
+    m  = foldl' (\a b -> max a (magnitude . f $ cis (pi * b / 180))) 0 degrees
     s  = if m > 0 then m else 1
 
 -- | Make an image from a set of 'Options', a 'Recipe' and a color source.
-domainColoring :: (RealFloat a, Pixel p, BlackWhite p)
-          => Options a -> Recipe a -> ColorSource a p -> Image p
+domainColoring :: (Pixel p, BlackWhite p)
+          => Options -> Recipe -> ColorSource p -> Image p
 domainColoring opts rcp source = generateImage color (width opts) (height opts)
   where
     color i j = case source of
@@ -95,8 +94,8 @@ domainColoring opts rcp source = generateImage color (width opts) (height opts)
 
 -- | Make a symmetry image from two 'Recipe's by linearly interpolation.
 --   The interpolation is along the horizontal axis.
-blend :: (RealFloat a, Pixel p, BlackWhite p)
-      => Options a -> Recipe a -> Recipe a -> ColorSource a p -> Image p
+blend :: (Pixel p, BlackWhite p)
+      => Options -> Recipe -> Recipe -> ColorSource p -> Image p
 blend opts rcp1 rcp2 = domainColoring opts rcp
   where
     rcp z = let a = (re z + m) / (2 * m)
@@ -107,8 +106,8 @@ blend opts rcp1 rcp2 = domainColoring opts rcp
 --   degree rotation. The cutoff represents what percentage of the
 --   image stays constant at the left and right sides. Like 'blend' the
 --   interpolation is in the horizontal direction.
-morph :: (RealFloat a, Pixel p, BlackWhite p)
-      => Options a -> Recipe a -> a -> ColorSource a p -> Image p
+morph :: (Pixel p, BlackWhite p)
+      => Options -> Recipe -> Double -> ColorSource p -> Image p
 morph opts rcp c = domainColoring opts rcp'
   where
     rcp' z@(x :+ _) = cis (pi * phi c ((x+t/2)/t)) * rcp z
@@ -120,24 +119,24 @@ morph opts rcp c = domainColoring opts rcp'
 
 -- Coefficients ----------------------------------------------------------------
 -- | Negate the indices of a coefficient.
-negateCoefs :: Coef a -> Coef a
+negateCoefs :: Coef -> Coef
 negateCoefs (Coef n m a) = Coef (-n) (-m) a
 
 -- | Negate the first index of a coefficient.
-negateFst :: Coef a -> Coef a
+negateFst :: Coef -> Coef
 negateFst (Coef n m a) = Coef (-n) m a
 
 -- | Negate the second index of a coefficient.
-negateSnd :: Coef a -> Coef a
+negateSnd :: Coef -> Coef
 negateSnd (Coef n m a) = Coef n (-m) a
 
 -- | Reverse the indices of a coefficient.
-reverseCoefs :: Coef a -> Coef a
+reverseCoefs :: Coef-> Coef
 reverseCoefs (Coef n m a) = Coef m n a
 
 -- | Multiply a coefficient by a function of its indices, usually used
 --   to change the sign of a coefficient based on its indices.
 --   Does not commute with negate or reverse, usually you want to apply
 --   'alternateCoefs' first.
-alternateCoefs :: RealFloat a => (Int -> Int -> a) -> Coef a -> Coef a
+alternateCoefs :: (Int -> Int -> Double) -> Coef -> Coef
 alternateCoefs alt (Coef n m a) = Coef n m (fromReal (alt n m) * a)

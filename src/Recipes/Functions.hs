@@ -6,7 +6,7 @@
 -- License     :  BSD-style (see LICENSE)
 -- Maintainer  :  jeffrey.rosenbluth@gmail.com
 --
--- Recipes for functions of a complex variable.
+-- Recipes for functions of a Complex variable.
 --
 -- The color wheel used for all of the images:
 --
@@ -22,8 +22,8 @@ module Recipes.Functions
 
 import           Types
 
-identity :: RealFloat a => Recipe a
+identity :: Recipe
 identity = id
 
-standard :: RealFloat a => Recipe a
+standard :: Recipe
 standard z = (z - 1) / (z**2 + z + 1)
