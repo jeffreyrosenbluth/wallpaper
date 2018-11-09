@@ -41,28 +41,27 @@ import           Data.List (foldl')
 --   use this function directly.
 getColor :: (Pixel p, BlackWhite p)
           => Options -> Recipe -> Image p -> Int -> Int -> p
-getColor opts rcp wheel i j = clamp (floor (re z) + w1 `div` 2 + floor x)
-                                    (floor (im z) + h1 `div` 2 + floor y)
+getColor opts rcp wheel i j = color (round (re z) + w `div` 2 + round x)
+                                    (round (im z) + h `div` 2 + round y)
   where
-    (x0 :+ y0) = origin opts
-    (w1, h1)   = (imageWidth wheel, imageHeight wheel)
-    (w0, h0)   = (fromIntegral w1, fromIntegral h1)
-    (x, y)     = (x0 * w0 / 2, -y0 * h0 / 2)
-    r          = min (w0 / 2 - abs x) (h0 / 2 - abs y)
+    (x', y') = origin opts
+    (w, h)   = (imageWidth wheel, imageHeight wheel)
+    (w', h')   = (fromIntegral w, fromIntegral h)
+    (x, y)     = (x' * w' / 2, -y' * h' / 2)
+    r          = min (w' / 2 - abs x) (h' / 2 - abs y)
     f          = focusIn (width opts)
                          (height opts)
                          (repLength opts)
                          rcp
                          (fromIntegral i :+ fromIntegral j)
-    z          = f * fromReal (scale opts * r) * cis (rotation opts)
-    clamp m n  = pixelAt wheel m' n'
-      where
-        m' | m < 0 = 0
-           | m >= w1 = w1 - 1
-           | otherwise = m
-        n' | n < 0 = 0
-           | n >= h1 = h1 -1
-           | otherwise = n
+    z          = f * fromDouble (scale opts * r) * cis (rotation opts)
+    color m n  = pixelAt wheel (clamp w m) (clamp h n)
+
+clamp :: Int -> Int -> Int
+clamp w x
+  | x < 0  = 0
+  | x >= w = w - 1
+  | otherwise = x
 
 -- | Center the coordinates at the origin and scale them based on 'repLength'
 focusIn :: Int -> Int -> Int -> Recipe -> Recipe
@@ -73,7 +72,7 @@ focusIn w h l rcp (x :+ y) =
 
 -- | Make a recipe from a lattice and a list of Coefficients.
 mkRecipe :: (Int -> Int -> Recipe) -> [Coef] -> Recipe
-mkRecipe rf cs = \z -> f z * fromReal (1/s)
+mkRecipe rf cs = (* fromDouble (1/s)) . f
   where
     degrees = fromIntegral <$> [0..359 :: Int]
     f x = sum ((\(i, j, y) -> y * rf i j x)
@@ -99,7 +98,7 @@ blend :: (Pixel p, BlackWhite p)
 blend opts rcp1 rcp2 = domainColoring opts rcp
   where
     rcp z = let a = (re z + m) / (2 * m)
-            in  fromReal a * rcp2 z + fromReal (1 - a) * rcp1 z
+            in  fromDouble a * rcp2 z + fromDouble (1 - a) * rcp1 z
     m     = max 1 (fromIntegral (width opts) / fromIntegral (height opts))
 
 -- | Make a symmetry image by interpolating between a color wheel and its 180
@@ -139,4 +138,4 @@ reverseCoefs (Coef n m a) = Coef m n a
 --   Does not commute with negate or reverse, usually you want to apply
 --   'alternateCoefs' first.
 alternateCoefs :: (Int -> Int -> Double) -> Coef -> Coef
-alternateCoefs alt (Coef n m a) = Coef n m (fromReal (alt n m) * a)
+alternateCoefs alt (Coef n m a) = Coef n m (fromDouble (alt n m) * a)

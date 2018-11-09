@@ -5,7 +5,8 @@
 -- License     :  BSD-style (see LICENSE)
 -- Maintainer  :  jeffrey.rosenbluth@gmail.com
 --
--- Utility functions for dealing with Complexlex numbers.
+-- A monomorphic version of Data.Complexr. The only function with significant
+-- changes is `magnitude`
 --------------------------------------------------------------------------------
 
 module Complextra
@@ -16,9 +17,9 @@ module Complextra
   , conjugate
   , mkPolar
   , polar
+  , fromDouble
   , scaleZ
   , (.*^)
-  , fromReal
   , im
   , re
   ) where
@@ -37,8 +38,8 @@ scaleZ k z = (k :+ 0) * z
 (.*^) = scaleZ
 infixl 7 .*^
 
-fromReal :: Double -> Complex
-fromReal x = x :+ 0
+fromDouble :: Double -> Complex
+fromDouble x = x :+ 0
 
 im :: Complex -> Double
 im (_ :+ b)= b

@@ -60,8 +60,8 @@ data Coef = Coef
 
 instance FromJSON Complex where
   parseJSON a@(Array _) = do
-    (r, i) <- parseJSON a
-    return $ r :+ i
+    (m, d) <- parseJSON a
+    return $ mkPolar m (pi * d / 180)
   parseJSON _ = fail "Expected Array for a Complex value."
 
 instance FromJSON Coef where
@@ -78,7 +78,7 @@ data Options = Options
   { width     :: Int -- ^ The width of the created image.
   , height    :: Int -- ^ The height of the created iamge.
   , repLength :: Int -- ^ The length of the pattern to repeat.
-  , origin    :: Complex
+  , origin    :: (Double, Double)
   , scale     :: Double   -- ^ Usually set less than 1, to Complexensate for the
                      --   fact that the color wheel is not infinite.
   , rotation   :: Double
@@ -101,7 +101,7 @@ instance FromJSON Options where
 --   with a repeat of 150 pixels and scales the pixel lookup coordintes
 --   by 1/2.
 defaultOpts :: Options
-defaultOpts = Options 750 750 150 (0 :+ 0) 0.5 0 False
+defaultOpts = Options 750 750 150 (0, 0) 0.5 0 False
 
 -- | The 17 Wallpaper groups and 7 Frieze groups.
 data SymmetryGroup

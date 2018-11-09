@@ -78,7 +78,6 @@ import           Data.List    (nub)
 -- | Periodic waves with respect to two translations. A Fourier vector.
 enm :: Int -> Int -> Double -> Double -> Complex
 enm n m x y = cis $ 2 * pi * (fromIntegral n * x + fromIntegral m * y)
-{-# INLINE enm #-}
 
 -- | Wave packets to create 2-fold rotational symmetry.
 tnm :: Int -> Int -> Double -> Double -> Complex
@@ -217,7 +216,6 @@ hexagonalLattice n m (x :+ y) = (1/3) * (enm n m x' y' + enm m (-n - m) x' y' + 
     x' = x + y / sqrt3
     y' = 2 * y / sqrt3
     sqrt3 = sqrt 3
-{-# INLINE hexagonalLattice #-}
 
 -- | 3-fold symmetry only.
 --
