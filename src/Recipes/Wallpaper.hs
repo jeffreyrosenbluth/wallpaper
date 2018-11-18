@@ -71,7 +71,7 @@ import           Complextra
 import           Core
 import           Types
 
-import           Data.List    (nub)
+import           Data.List  (nub)
 
 -- Wave functions --------------------------------------------------------------
 

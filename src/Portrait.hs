@@ -38,12 +38,12 @@ module Portrait
   , writeImage
   ) where
 
+import           Complextra
 import           Core
 import           Recipes.Frieze
 import           Recipes.Rosette
 import           Recipes.Wallpaper
 import           Types
-import           Complextra
 
 import           Codec.Picture
 import           Codec.Picture.Types

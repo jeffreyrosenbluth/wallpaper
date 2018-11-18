@@ -11,7 +11,7 @@
 # or, just directly:
 #   Group: p4
 Group:
-  name: p3
+  name: p4g
   # b: 1
 
 
@@ -21,16 +21,16 @@ Group:
 Coefficients:
 - A(n,m): [1, 0] # 0.75 + 0.25i
   n: 1                 # first index of coefficient
-  m: -1                 # second index of coefficient
-# - A(n,m): [0.67, -54]
-#   n: 0
-#   m: -3
-# - A(n,m): [0.449, 167]
-#   n: 2
-#   m: 2
-# - A(n,m): [0.301, 151]
-#   n: 2
-#   m: -4
+  m: 0                 # second index of coefficient
+- A(n,m): [0.67, -54]
+  n: 0
+  m: -3
+- A(n,m): [0.449, 167]
+  n: 2
+  m: 2
+- A(n,m): [0.301, 151]
+  n: 2
+  m: -4
 
 # Optional field for setting the style, choices are: plain, morph (which takes
 # one parameter: cutoff), and blend (which takes as an argument a group object).
@@ -47,8 +47,8 @@ Type:
 Options:
   width: 600        # width in pixels of the output image
   height: 480       # height in pixels of the output image
-  origin: [0.25, 0.25]
-  repeat-length: 280 # used to convert pixel coordinates to real numbers
+  origin: [0, 0]
+  repeat-length: 240 # used to convert pixel coordinates to real numbers
   scale-factor: 1 # to scale the color wheel so that it contains the domain values
   rotation: 0
   morphing: False

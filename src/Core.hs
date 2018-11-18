@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 --------------------------------------------------------------------------------
@@ -33,84 +33,74 @@ import           Complextra
 import           Types
 
 import           Codec.Picture
-import           Data.List (foldl')
+import           Data.List     (foldl')
+
+-- | Specialized alias for fromIntegral.
+dbl :: Int -> Double
+dbl = fromIntegral
 
 -- Domain Coloring -------------------------------------------------------------
 -- | Creates a function to get the color of pixel (i, j) from a color wheel
---   given 'Options', a 'Recipe' and the color wheel. You shouldn't need to
---   use this function directly.
-getColor :: (Pixel p, BlackWhite p)
-          => Options -> Recipe -> Image p -> Int -> Int -> p
-getColor opts rcp wheel i j = color (round (re z) + w `div` 2 + round x)
-                                    (round (im z) + h `div` 2 + round y)
+--   given 'Options', a 'Recipe' and the color wheel.
+color :: Pixel p => Options -> Recipe -> Image p -> Int -> Int -> p
+color opts rcp wheel i j = pixel (round $ re z + dbl w / 2 + x)
+                                 (round $ im z + dbl h / 2 + y)
   where
-    (x', y') = origin opts
-    (w, h)   = (imageWidth wheel, imageHeight wheel)
-    (w', h')   = (fromIntegral w, fromIntegral h)
-    (x, y)     = (x' * w' / 2, -y' * h' / 2)
-    r          = min (w' / 2 - abs x) (h' / 2 - abs y)
-    f          = focusIn (width opts)
-                         (height opts)
-                         (repLength opts)
-                         rcp
-                         (fromIntegral i :+ fromIntegral j)
+    (w, h)     = (imageWidth wheel, imageHeight wheel)
+    (x, y)     = (fst (origin opts) * dbl w / 2, - snd (origin opts) * dbl h / 2)
+    r          = min (dbl w / 2 - abs x) (dbl h / 2 - abs y)
+    f          = focusIn opts rcp (ints2Complex i j)
     z          = f * fromDouble (scale opts * r) * cis (rotation opts)
-    color m n  = pixelAt wheel (clamp w m) (clamp h n)
+    pixel m n  = pixelAt wheel (clamp w m) (clamp h n)
 
-clamp :: Int -> Int -> Int
+-- | Helper function to restrict an number to [0, w-1].
+clamp :: (Num a, Ord a) => a -> a -> a
 clamp w x
-  | x < 0  = 0
-  | x >= w = w - 1
+  | x < 0     = 0
+  | x >= w    = w - 1
   | otherwise = x
 
 -- | Center the coordinates at the origin and scale them based on 'repLength'
-focusIn :: Int -> Int -> Int -> Recipe -> Recipe
-focusIn w h l rcp (x :+ y) =
-  rcp ((x - fromIntegral w / 2) / l' :+ (fromIntegral h / 2 - y) / l')
-    where
-      l' = fromIntegral l
+focusIn :: Options -> Recipe -> Recipe
+focusIn opts rcp (x :+ y) = rcp ((x - w / 2) / replen :+ (h / 2 - y) / replen)
+  where
+    [replen, w, h] = dbl <$> [repLength opts, width opts, height opts]
 
 -- | Make a recipe from a lattice and a list of Coefficients.
 mkRecipe :: (Int -> Int -> Recipe) -> [Coef] -> Recipe
 mkRecipe rf cs = (* fromDouble (1/s)) . f
   where
-    degrees = fromIntegral <$> [0..359 :: Int]
-    f x = sum ((\(i, j, y) -> y * rf i j x)
-      <$> [(nCoord c, mCoord c, anm c) | c <- cs])
-    m  = foldl' (\a b -> max a (magnitude . f $ cis (pi * b / 180))) 0 degrees
-    s  = if m > 0 then m else 1
+    f x = sum $ (\coef -> anm coef * rf (nCoord coef) (mCoord coef) x) <$> cs
+    m   = foldl' (\a b -> max a (magnitude . f $ cis (pi * b / 180))) 0 [0..359]
+    s   = if m > 0 then m else 1
 
 -- | Make an image from a set of 'Options', a 'Recipe' and a color source.
-domainColoring :: (Pixel p, BlackWhite p)
-          => Options -> Recipe -> ColorSource p -> Image p
-domainColoring opts rcp source = generateImage color (width opts) (height opts)
+domainColoring :: (Pixel p) => Options -> Recipe -> ColorSource p -> Image p
+domainColoring opts rcp source = generateImage colorOf (width opts) (height opts)
   where
-    color i j = case source of
-      Picture img -> getColor opts rcp img i j
-      Function f  ->
-        let rcp' = focusIn (width opts) (height opts) (repLength opts) rcp
-        in  f . rcp' $ (fromIntegral i :+ fromIntegral j)
+    colorOf i j = case source of
+      Picture img -> color opts rcp img i j
+      Function f  -> let rcp' = focusIn opts rcp
+                     in  f . rcp' $ ints2Complex i j
 
 -- | Make a symmetry image from two 'Recipe's by linearly interpolation.
 --   The interpolation is along the horizontal axis.
-blend :: (Pixel p, BlackWhite p)
-      => Options -> Recipe -> Recipe -> ColorSource p -> Image p
+blend :: (Pixel p) => Options -> Recipe -> Recipe -> ColorSource p -> Image p
 blend opts rcp1 rcp2 = domainColoring opts rcp
   where
     rcp z = let a = (re z + m) / (2 * m)
             in  fromDouble a * rcp2 z + fromDouble (1 - a) * rcp1 z
-    m     = max 1 (fromIntegral (width opts) / fromIntegral (height opts))
+    m     = max 1 (dbl (width opts) / dbl (height opts))
 
 -- | Make a symmetry image by interpolating between a color wheel and its 180
 --   degree rotation. The cutoff represents what percentage of the
 --   image stays constant at the left and right sides. Like 'blend' the
 --   interpolation is in the horizontal direction.
-morph :: (Pixel p, BlackWhite p)
-      => Options -> Recipe -> Double -> ColorSource p -> Image p
+morph :: (Pixel p) => Options -> Recipe -> Double -> ColorSource p -> Image p
 morph opts rcp c = domainColoring opts rcp'
   where
     rcp' z@(x :+ _) = cis (pi * phi c ((x+t/2)/t)) * rcp z
-    t = fromIntegral (width opts `div`repLength opts)
+    t = dbl (width opts `div`repLength opts)
     phi cut u
       | u < cut = 1
       | u > 1 - cut = -1

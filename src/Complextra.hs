@@ -22,6 +22,7 @@ module Complextra
   , (.*^)
   , im
   , re
+  , ints2Complex
   ) where
 
 data Complex = !Double :+ !Double
@@ -76,6 +77,9 @@ magnitude (x:+y) = sqrt (x * x + y * y)
 phase :: Complex -> Double
 phase (0 :+ 0) = 0
 phase (x:+y)   = atan2 y x
+
+ints2Complex :: Int -> Int -> Complex
+ints2Complex a b = fromIntegral a :+ fromIntegral b
 
 instance Num Complex where
     (x:+y) + (x':+y') =  (x+x') :+ (y+y')

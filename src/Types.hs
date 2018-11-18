@@ -3,6 +3,7 @@
 {-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE StrictData           #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE TypeFamilies         #-}
 
 {-# OPTIONS_GHC -fno-warn-orphans  #-}
 
@@ -53,8 +54,8 @@ data ColorSource p
 -- | The coefficents used to build a symmetry recipe, C_nm. A coeffient
 --   is a doubley indexed Complex number
 data Coef = Coef
-  { nCoord :: Int       -- ^ The first index.
-  , mCoord :: Int       -- ^ The second index.
+  { nCoord :: Int     -- ^ The first index.
+  , mCoord :: Int     -- ^ The second index.
   , anm    :: Complex -- ^ The coefficient.
   } deriving (Show, Eq)
 
@@ -81,8 +82,8 @@ data Options = Options
   , origin    :: (Double, Double)
   , scale     :: Double   -- ^ Usually set less than 1, to Complexensate for the
                      --   fact that the color wheel is not infinite.
-  , rotation   :: Double
-  , morphing   :: Bool
+  , rotation  :: Double
+  , morphing  :: Bool
   } deriving (Show, Eq)
 
 instance FromJSON Options where
@@ -137,16 +138,16 @@ instance FromJSON SymmetryGroup where
   parseJSON (Object v) = do
     (name :: Text) <- v .: "name"
     case toLower name of
-      "p1"   -> P1  <$> v .: "xi" <*> v .: "eta"
-      "p2"   -> P2  <$> v .: "xi" <*> v .: "eta"
-      "cm"   -> CM  <$> v .: "b"
-      "cmm"  -> CMM <$> v .: "b"
-      "pm"   -> PM  <$> v .: "L"
-      "pg"   -> PG  <$> v .: "L"
-      "pmm"  -> PMM <$> v .: "L"
-      "pmg"  -> PMG <$> v .: "L"
-      "pgg"  -> PGG <$> v .: "L"
-      s      -> parseGroup s
+      "p1"  -> P1  <$> v .: "xi" <*> v .: "eta"
+      "p2"  -> P2  <$> v .: "xi" <*> v .: "eta"
+      "cm"  -> CM  <$> v .: "b"
+      "cmm" -> CMM <$> v .: "b"
+      "pm"  -> PM  <$> v .: "L"
+      "pg"  -> PG  <$> v .: "L"
+      "pmm" -> PMM <$> v .: "L"
+      "pmg" -> PMG <$> v .: "L"
+      "pgg" -> PGG <$> v .: "L"
+      s     -> parseGroup s
   parseJSON (String s) = parseGroup s
   parseJSON _ = fail "Group must be an object or String"
 
@@ -200,14 +201,14 @@ data PreProcess
 instance FromJSON PreProcess where
   parseJSON (String s) =
     case toLower s of
-      "fliphorizontal"      -> pure FlipHorizontal
-      "flipvertical"        -> pure FlipVertical
-      "flipboth"            -> pure FlipBoth
-      "invert"              -> pure Invert
-      "antisymmvertical"    -> pure AntiSymmVertical
-      "antisymmhorizontal"  -> pure AntiSymmHorizontal
-      "none"                -> pure None
-      _                     -> fail "Invalid Pre-process type"
+      "fliphorizontal"     -> pure FlipHorizontal
+      "flipvertical"       -> pure FlipVertical
+      "flipboth"           -> pure FlipBoth
+      "invert"             -> pure Invert
+      "antisymmvertical"   -> pure AntiSymmVertical
+      "antisymmhorizontal" -> pure AntiSymmHorizontal
+      "none"               -> pure None
+      _                    -> fail "Invalid Pre-process type"
   parseJSON _ = fail "Pre-process must be a String"
 
 -- | Settings for creating a wallpaper.
